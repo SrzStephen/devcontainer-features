@@ -3,10 +3,10 @@ import os
 import shutil
 import subprocess
 import tempfile
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator
 
 import pytest
 
@@ -24,7 +24,9 @@ class FeatureTestCase:
 
     @property
     def option_id(self) -> str:
-        return "-".join(f"{k}={v}" for k, v in sorted(self.options.items())) or "defaults"
+        return (
+            "-".join(f"{k}={v}" for k, v in sorted(self.options.items())) or "defaults"
+        )
 
 
 DEBIAN = "debian:bookworm"
@@ -32,14 +34,41 @@ ALPINE = "alpine:3.20"
 ALL_IMAGES = [DEBIAN, ALPINE]
 
 TEST_CASES = [
-    FeatureTestCase("just", {"version": "latest", "lspVersion": "latest"}, ["just", "just-lsp"], ALL_IMAGES),
-    FeatureTestCase("just", {"version": "latest", "lspVersion": "false"}, ["just"],              ALL_IMAGES),
-    FeatureTestCase("just", {"version": "1",      "lspVersion": "latest"}, ["just", "just-lsp"], ALL_IMAGES),
+    FeatureTestCase(
+        "just",
+        {"version": "latest", "lspVersion": "latest"},
+        ["just", "just-lsp"],
+        ALL_IMAGES,
+    ),
+    FeatureTestCase(
+        "just",
+        {"version": "latest", "lspVersion": "false"},
+        ["just"],
+        ALL_IMAGES,
+    ),
+    FeatureTestCase(
+        "just",
+        {"version": "1", "lspVersion": "latest"},
+        ["just", "just-lsp"],
+        ALL_IMAGES,
+    ),
     FeatureTestCase("kiro", {}, ["kiro-cli"], ALL_IMAGES),
-    FeatureTestCase("claude-code", {},                            ["claude"], ALL_IMAGES),
-    FeatureTestCase("claude-code", {"removeAttribution": "true"}, ["claude"], ALL_IMAGES),
-    FeatureTestCase("nvidia-container-toolkit", {"version": "latest"}, ["nvidia-ctk"], [DEBIAN]),
-    FeatureTestCase("nvidia-container-toolkit", {"version": "1.17.8"}, ["nvidia-ctk"], [DEBIAN]),
+    FeatureTestCase("claude-code", {}, ["claude"], ALL_IMAGES),
+    FeatureTestCase(
+        "claude-code", {"removeAttribution": "true"}, ["claude"], ALL_IMAGES
+    ),
+    FeatureTestCase(
+        "nvidia-container-toolkit",
+        {"version": "latest"},
+        ["nvidia-ctk"],
+        [DEBIAN],
+    ),
+    FeatureTestCase(
+        "nvidia-container-toolkit",
+        {"version": "1.17.8"},
+        ["nvidia-ctk"],
+        [DEBIAN],
+    ),
 ]
 
 PARAMS = [
@@ -76,7 +105,9 @@ def _generate_dockerfile(tc: FeatureTestCase, image: str) -> str:
 
 
 @contextmanager
-def built_docker_image(tc: FeatureTestCase, image: str, project_root: Path) -> Iterator[str]:
+def built_docker_image(
+    tc: FeatureTestCase, image: str, project_root: Path
+) -> Iterator[str]:
     tag = f"devcontainer-feature-test-{tc.feature_id}-{abs(hash(tc.option_id))}"
     dockerfile = _generate_dockerfile(tc, image)
     with tempfile.NamedTemporaryFile("w", suffix=".Dockerfile", delete=False) as f:
@@ -96,7 +127,9 @@ def built_docker_image(tc: FeatureTestCase, image: str, project_root: Path) -> I
 
 
 @contextmanager
-def built_devcontainer_image(tc: FeatureTestCase, image: str, project_root: Path) -> Iterator[str]:
+def built_devcontainer_image(
+    tc: FeatureTestCase, image: str, project_root: Path
+) -> Iterator[str]:
     tag = f"devcontainer-feature-test-dc-{tc.feature_id}-{abs(hash(tc.option_id))}"
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp = Path(tmpdir)
@@ -110,7 +143,14 @@ def built_devcontainer_image(tc: FeatureTestCase, image: str, project_root: Path
         }
         (tmp / ".devcontainer" / "devcontainer.json").write_text(json.dumps(config))
         result = subprocess.run(
-            ["devcontainer", "build", "--workspace-folder", tmpdir, "--image-name", tag],
+            [
+                "devcontainer",
+                "build",
+                "--workspace-folder",
+                tmpdir,
+                "--image-name",
+                tag,
+            ],
             capture_output=True,
             text=True,
         )

@@ -19,10 +19,12 @@ def test_feature_installs(tc, image, project_root):
         for binary in tc.binaries:
             out = docker_run(tag, f"which {binary}")
             assert out.returncode == 0, (
-                f"{binary} not found on PATH in {image} ({tc.feature_id} {tc.option_id})\n{out.stderr}"
+                f"{binary} not found on PATH in {image} "
+                f"({tc.feature_id} {tc.option_id})\n{out.stderr}"
             )
 
             out = docker_run(tag, f"{binary} --help")
             assert out.returncode == 0, (
-                f"{binary} --help exited {out.returncode} in {image} ({tc.feature_id} {tc.option_id})\n{out.stderr}"
+                f"{binary} --help exited {out.returncode} in {image} "
+                f"({tc.feature_id} {tc.option_id})\n{out.stderr}"
             )
