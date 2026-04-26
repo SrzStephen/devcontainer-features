@@ -14,11 +14,22 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-resolve_latest() {
-    local tmp
+# Resolve "latest", "1", or "1.40" to a full version; pass through "1.40.0".
+resolve_version() {
+    local repo="$1" version="$2" tmp dot_count
     tmp="$(mktemp)"
-    curl -fsSL "https://api.github.com/repos/${1}/releases/latest" -o "${tmp}"
-    grep -m1 '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//'
+    if [ "${version}" = "latest" ]; then
+        curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" -o "${tmp}"
+        grep -m1 '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//'
+    else
+        dot_count="$(printf '%s' "${version}" | tr -cd '.' | wc -c)"
+        if [ "${dot_count}" -lt 2 ]; then
+            curl -fsSL "https://api.github.com/repos/${repo}/releases?per_page=100" -o "${tmp}"
+            grep '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//' | grep -m1 "^${version}\."
+        else
+            echo "${version}"
+        fi
+    fi
     rm -f "${tmp}"
 }
 
@@ -42,7 +53,7 @@ case "$(uname -m)" in
         ;;
 esac
 
-[ "${JUST_VERSION}" = "latest" ] && JUST_VERSION="$(resolve_latest casey/just)"
+JUST_VERSION="$(resolve_version casey/just "${JUST_VERSION}")"
 
 echo "Downloading just ${JUST_VERSION}..."
 tmp="$(mktemp -d)"
@@ -55,7 +66,7 @@ rm -rf "${tmp}"
 echo -e "\nsource <(just --completions bash)\n" >> "$_REMOTE_USER_HOME/.bashrc"
 
 if [ "${JUST_LSP_VERSION}" != "false" ]; then
-    [ "${JUST_LSP_VERSION}" = "latest" ] && JUST_LSP_VERSION="$(resolve_latest terror/just-lsp)"
+    JUST_LSP_VERSION="$(resolve_version terror/just-lsp "${JUST_LSP_VERSION}")"
     echo "Downloading just-lsp ${JUST_LSP_VERSION}..."
     tmp="$(mktemp -d)"
     curl -sL "https://github.com/terror/just-lsp/releases/download/${JUST_LSP_VERSION}/just-lsp-${JUST_LSP_VERSION}-$(uname -m)-unknown-linux-musl.tar.gz" | tar xz -C "${tmp}"
