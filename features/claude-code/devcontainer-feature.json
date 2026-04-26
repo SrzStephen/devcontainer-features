@@ -1,0 +1,26 @@
+{
+  "id": "claude-code",
+  "version": "0.1.0",
+  "name": "Claude Code",
+  "description": "Installs Claude Code CLI and optionally configures plugin marketplaces, plugins, and attribution settings.",
+  "options": {
+    "marketplace": {
+      "type": "string",
+      "default": "",
+      "description": "Plugin marketplace to register. Accepts owner/repo shorthand (e.g. obra/superpowers-marketplace) or a full GitHub URL (e.g. https://github.com/obra/superpowers-marketplace). Skipped when empty."
+    },
+    "plugin": {
+      "type": "string",
+      "default": "",
+      "description": "Plugin to install after the marketplace is configured. Accepts plugin-name@marketplace-name format (e.g. superpowers@superpowers-marketplace) or a full GitHub URL. Skipped when empty."
+    },
+    "removeAttribution": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, injects empty commit and pr attribution strings into ~/.claude/settings.json, suppressing Co-Authored-By lines from Claude Code commits."
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}
