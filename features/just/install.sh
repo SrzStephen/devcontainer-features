@@ -15,8 +15,11 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 resolve_latest() {
-    curl -fsSL "https://api.github.com/repos/${1}/releases/latest" \
-        | grep -m1 '"tag_name"' | cut -d'"' -f4 | sed 's/^v//'
+    local tmp
+    tmp="$(mktemp)"
+    curl -fsSL "https://api.github.com/repos/${1}/releases/latest" -o "${tmp}"
+    grep -m1 '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//'
+    rm -f "${tmp}"
 }
 
 export DEBIAN_FRONTEND=noninteractive
