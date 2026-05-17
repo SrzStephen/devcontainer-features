@@ -1,0 +1,69 @@
+{
+  "name": "devcontainer-features",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "timonwong.shellcheck",
+        "MermaidChart.vscode-mermaid-chart",
+        "esbenp.prettier-vscode",
+        "github.vscode-github-actions",
+        "GitHub.vscode-pull-request-github",
+        "nefrob.vscode-just-syntax"
+      ],
+      "settings": {
+        "github.copilot.enable": {
+          "*": false
+        },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "[just]": {
+          "editor.formatOnSave": false
+        },
+        "chat.disableAIFeatures": true,
+        "vscode-just.useSingleTerminal": true,
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {"moby": false},
+    "ghcr.io/devcontainers-contrib/features/shellcheck:1": {},
+    "ghcr.io/devcontainers/features/rust:1": {},
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainer-community/devcontainer-features/github.com-cli:1": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/tobiaschc/devcontainer-features/starship:1": {
+      "userShell": "zsh"
+    },
+    "ghcr.io/stu-bell/devcontainer-features/claude-code:0": {},
+    "ghcr.io/pirpedro/features/just:1": {}
+  },
+  "forwardPorts": [37345],
+  "portsAttributes": {
+    "37345": {
+      "label": "Claude Code OAuth",
+      "onAutoForward": "silent",
+      "visibility": "public"
+    }
+  },
+  "otherPortsAttributes": {
+    "onAutoForward": "silent"
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.cache/devcontainer,target=/var/cache/apt,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.claude.json,target=/home/vscode/.claude.json,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.claude/projects,target=/home/vscode/.claude/projects,type=bind,consistency=cached"
+  ],
+  "initializeCommand": "mkdir -p ${localEnv:HOME}/.cache/devcontainer ${localEnv:HOME}/.claude/projects && touch ${localEnv:HOME}/.claude.json",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+  "remoteEnv": {
+    "CLAUDE_OAUTH_PORT": "37345"
+  },
+  "containerEnv": {
+    "NODE_OPTIONS": "--dns-result-order=ipv4first",
+    "CLAUDE_OAUTH_PORT": "37345"
+  }
+}
