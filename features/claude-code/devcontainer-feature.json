@@ -18,6 +18,11 @@
       "type": "boolean",
       "default": false,
       "description": "When true, injects empty commit and pr attribution strings into ~/.claude/settings.json, suppressing Co-Authored-By lines from Claude Code commits."
+    },
+    "statusline": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, installs statusline.sh to ~/.claude/statusline-command.sh and configures it as the Claude Code status line in ~/.claude/settings.json."
     }
   },
   "installsAfter": [

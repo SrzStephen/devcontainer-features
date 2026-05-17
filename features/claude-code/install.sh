@@ -9,6 +9,7 @@ set -euo pipefail
 MARKETPLACE="${MARKETPLACE:-""}"
 PLUGIN="${PLUGIN:-""}"
 REMOVE_ATTRIBUTION="${REMOVEATTRIBUTION:-"false"}"
+STATUSLINE="${STATUSLINE:-"false"}"
 
 REMOTE_USER="${_REMOTE_USER:-"vscode"}"
 REMOTE_USER_HOME="${_REMOTE_USER_HOME:-"/home/${REMOTE_USER}"}"
@@ -52,7 +53,7 @@ if ! command -v curl &>/dev/null; then
     _install_pkg curl ca-certificates
 fi
 
-if [ "${REMOVE_ATTRIBUTION}" = "true" ] && ! command -v jq &>/dev/null; then
+if { [ "${REMOVE_ATTRIBUTION}" = "true" ] || [ "${STATUSLINE}" = "true" ]; } && ! command -v jq &>/dev/null; then
     _install_pkg jq
 fi
 
@@ -99,6 +100,37 @@ if [ "${REMOVE_ATTRIBUTION}" = "true" ]; then
         printf '{"attribution":{"commit":"","pr":""}}\n' > "${CLAUDE_SETTINGS}"
         chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS}"
         echo "Attribution removed from Claude settings."
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# Statusline
+# ---------------------------------------------------------------------------
+
+if [ "${STATUSLINE}" = "true" ]; then
+    CLAUDE_SETTINGS="${REMOTE_USER_HOME}/.claude/settings.json"
+    CLAUDE_SETTINGS_DIR="$(dirname "${CLAUDE_SETTINGS}")"
+    SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
+
+    mkdir -p "${CLAUDE_SETTINGS_DIR}"
+    chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS_DIR}"
+
+    cp "${SCRIPT_DIR}/statusline.sh" "${CLAUDE_SETTINGS_DIR}/statusline-command.sh"
+    chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS_DIR}/statusline-command.sh"
+    echo "Statusline script installed to ${CLAUDE_SETTINGS_DIR}/statusline-command.sh."
+
+    if [ -f "${CLAUDE_SETTINGS}" ] && jq -e '.statusLine' "${CLAUDE_SETTINGS}" &>/dev/null; then
+        echo "statusLine already configured in ${CLAUDE_SETTINGS}, skipping."
+    elif [ -f "${CLAUDE_SETTINGS}" ]; then
+        tmp=$(mktemp)
+        jq '. + {"statusLine": {"type": "command", "command": "bash ~/.claude/statusline-command.sh"}}' "${CLAUDE_SETTINGS}" > "${tmp}"
+        mv "${tmp}" "${CLAUDE_SETTINGS}"
+        chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS}"
+        echo "statusLine configured in ${CLAUDE_SETTINGS}."
+    else
+        printf '{"statusLine":{"type":"command","command":"bash ~/.claude/statusline-command.sh"}}\n' > "${CLAUDE_SETTINGS}"
+        chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS}"
+        echo "statusLine configured in ${CLAUDE_SETTINGS}."
     fi
 fi
 
