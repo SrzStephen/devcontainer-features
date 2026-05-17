@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  release:
+    types: [published]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: find features -name "*.sh" | xargs shellcheck
+
+  test-features:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        feature: [claude-code, just, kiro, nvidia-container-toolkit]
+        base-image: [debian:bookworm, alpine:3.20]
+        exclude:
+          - feature: kiro
+            base-image: alpine:3.20
+          - feature: nvidia-container-toolkit
+            base-image: alpine:3.20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install devcontainer CLI
+        run: npm install -g @devcontainers/cli
+      - name: Test ${{ matrix.feature }} on ${{ matrix.base-image }}
+        run: |
+          devcontainer features test \
+            --features ${{ matrix.feature }} \
+            --base-image ${{ matrix.base-image }} \
+            --project-folder .
+
+  publish-features:
+    name: Publish devcontainer features to GHCR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish features
+        uses: devcontainers/action@v1
+        with:
+          publish-features: "true"
+          base-path-to-features: "./features"
+          generate-docs: "true"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
