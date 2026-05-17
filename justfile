@@ -6,7 +6,7 @@ default: all
 all: lint test
 
 lint:
-	find features -name "*.sh" | xargs shellcheck
+	find src -name "*.sh" | xargs shellcheck
 
 test: test-claude-code test-just test-kiro test-nvidia-container-toolkit
 
@@ -25,4 +25,4 @@ test-nvidia-container-toolkit:
 	devcontainer features test -f nvidia-container-toolkit --base-image {{DEBIAN}} -p .
 
 generate-docs:
-	npx --yes @devcontainers/cli@latest features generate-docs -p features -n SrzStephen/devcontainer-features
+	npx --yes @devcontainers/cli@latest features generate-docs -p . -n SrzStephen/devcontainer-features
