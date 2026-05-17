@@ -1,0 +1,10 @@
+{
+  "scenarios": {
+    "pinned-version": {
+      "options": {
+        "version": "1.17.8"
+      },
+      "testFile": "test/pinned-version/test.sh"
+    }
+  }
+}
