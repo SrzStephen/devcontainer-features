@@ -1,0 +1,24 @@
+{
+    "remove-attribution": {
+        "image": "debian:bookworm",
+        "features": {
+            "claude-code": {
+                "removeAttribution": "true"
+            }
+        }
+    },
+    "statusline": {
+        "image": "debian:bookworm",
+        "features": {
+            "claude-code": {
+                "statusline": "true"
+            }
+        }
+    },
+    "non-root-user": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "claude-code": {}
+        }
+    }
+}
