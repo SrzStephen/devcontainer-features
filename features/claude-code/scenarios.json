@@ -1,0 +1,16 @@
+{
+  "scenarios": {
+    "remove-attribution": {
+      "options": {
+        "removeAttribution": "true"
+      },
+      "testFile": "test/remove-attribution/test.sh"
+    },
+    "statusline": {
+      "options": {
+        "statusline": "true"
+      },
+      "testFile": "test/statusline/test.sh"
+    }
+  }
+}
