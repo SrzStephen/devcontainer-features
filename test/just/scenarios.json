@@ -1,0 +1,25 @@
+{
+    "no-lsp": {
+        "image": "debian:bookworm",
+        "features": {
+            "just": {
+                "lspVersion": "false"
+            }
+        }
+    },
+    "partial-version": {
+        "image": "debian:bookworm",
+        "features": {
+            "just": {
+                "version": "1",
+                "lspVersion": "latest"
+            }
+        }
+    },
+    "non-root-user": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "just": {}
+        }
+    }
+}
