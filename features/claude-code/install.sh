@@ -28,11 +28,17 @@ run_as_user() {
     fi
 }
 
-# Strip https://github.com/ prefix so both short (owner/repo) and full URL
-# forms normalise to the owner/repo shorthand that the claude CLI expects.
+# Normalise a GitHub reference for the claude CLI.
+# Full HTTPS URLs pass through unchanged; owner/repo shorthands are expanded
+# to full HTTPS so git clones use HTTPS (SSH keys are unavailable during
+# container builds); other values (e.g. plugin@marketplace) pass through.
 normalize_gh_ref() {
     local ref="$1"
-    echo "${ref#https://github.com/}"
+    case "$ref" in
+        https://*|http://*) echo "$ref" ;;
+        */*) echo "https://github.com/${ref}" ;;
+        *) echo "$ref" ;;
+    esac
 }
 
 # ---------------------------------------------------------------------------
@@ -54,7 +60,11 @@ if ! command -v curl &>/dev/null; then
     _install_pkg curl ca-certificates
 fi
 
-if { [ "${REMOVE_ATTRIBUTION}" = "true" ] || [ "${STATUSLINE}" = "true" ]; } && ! command -v jq &>/dev/null; then
+if { [ -n "${MARKETPLACE}" ] || [ -n "${PLUGIN}" ]; } && ! command -v git &>/dev/null; then
+    _install_pkg git ca-certificates
+fi
+
+if { [ "${REMOVE_ATTRIBUTION}" = "true" ] || [ "${STATUSLINE}" = "true" ] || [ -n "${MARKETPLACE}" ] || [ -n "${PLUGIN}" ]; } && ! command -v jq &>/dev/null; then
     _install_pkg jq
 fi
 

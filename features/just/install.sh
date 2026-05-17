@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck shell=bash
 # Bootstrap: install bash on Alpine if needed, then re-exec under bash.
 if [ -z "${BASH_VERSION:-}" ]; then
     command -v apk >/dev/null 2>&1 && apk add --no-cache bash >/dev/null 2>&1
@@ -45,8 +46,7 @@ else
 fi
 
 case "$(uname -m)" in
-    x86_64)  architecture="amd64" ;;
-    aarch64) architecture="arm64" ;;
+    x86_64 | aarch64) ;;
     *)
         echo "(!) Architecture $(uname -m) unsupported"
         exit 1

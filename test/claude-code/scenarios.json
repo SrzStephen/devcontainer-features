@@ -1,33 +1,42 @@
 {
-    "remove-attribution": {
-        "image": "debian:bookworm",
-        "features": {
-            "claude-code": {
-                "removeAttribution": "true"
-            }
-        }
-    },
-    "statusline": {
-        "image": "debian:bookworm",
-        "features": {
-            "claude-code": {
-                "statusline": "true"
-            }
-        }
-    },
-    "non-root-user": {
-        "image": "mcr.microsoft.com/devcontainers/base:debian",
-        "features": {
-            "claude-code": {}
-        }
-    },
-    "install-plugin": {
-        "image": "debian:bookworm",
-        "features": {
-            "claude-code": {
-                "marketplace": "obra/superpowers-marketplace",
-                "plugin": "superpowers@superpowers-marketplace"
-            }
-        }
+  "remove-attribution": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {
+        "removeAttribution": "true"
+      }
     }
+  },
+  "statusline": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {
+        "statusline": "true"
+      }
+    }
+  },
+  "non-root-user": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "claude-code": {}
+    }
+  },
+  "install-plugin": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {
+        "marketplace": "obra/superpowers-marketplace",
+        "plugin": "superpowers@superpowers-marketplace"
+      }
+    }
+  },
+  "install-plugin-from-git": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {
+        "marketplace": "https://github.com/obra/superpowers-marketplace.git",
+        "plugin": "superpowers@superpowers-marketplace"
+      }
+    }
+  }
 }

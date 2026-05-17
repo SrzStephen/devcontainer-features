@@ -21,13 +21,11 @@ fg_green="\033[92m"
 fg_yellow="\033[93m"
 fg_orange="\033[38;5;214m"
 fg_red="\033[91m"
-fg_blue="\033[94m"
 fg_magenta="\033[95m"
 fg_dark="\033[38;5;240m"
 
 # Separator / icon constants
 SEP="${fg_dark}│${reset}"
-SEP_THIN="${fg_dark} ${reset}"
 
 # ---------------------------------------------------------------------------
 # Read stdin once
@@ -97,8 +95,8 @@ if [ -n "$used_pct" ]; then
   filled=$(( used_int * bar_width / 100 ))
   empty=$(( bar_width - filled ))
   bar=""
-  for i in $(seq 1 $filled); do bar="${bar}▓"; done
-  for i in $(seq 1 $empty);  do bar="${bar}░"; done
+  for _ in $(seq 1 "$filled"); do bar="${bar}▓"; done
+  for _ in $(seq 1 "$empty");  do bar="${bar}░"; done
 
   ctx_str="${bar_color}${bar} ${used_int}%${reset}"
 
@@ -153,8 +151,9 @@ fi
 # ---------------------------------------------------------------------------
 # 5 & 6. Rate limits
 # ---------------------------------------------------------------------------
-five_pct=$(printf '%s' "$input"  | jq -r '.rate_limits.five_hour.used_percentage  // empty')
-seven_pct=$(printf '%s' "$input" | jq -r '.rate_limits.seven_day.used_percentage  // empty')
+five_pct=$(printf '%s' "$input"      | jq -r '.rate_limits.five_hour.used_percentage // empty')
+five_resets_at=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.resets_at       // empty')
+seven_pct=$(printf '%s' "$input"     | jq -r '.rate_limits.seven_day.used_percentage  // empty')
 
 rate_parts=""
 
@@ -164,7 +163,20 @@ if [ -n "$five_pct" ]; then
   elif [ "$five_int" -ge 50 ]; then rc="$fg_orange"
   else                               rc="$fg_green"
   fi
-  rate_parts="${rc}5h:${five_int}%${reset}"
+
+  five_reset_str=""
+  if [ -n "$five_resets_at" ]; then
+    reset_epoch=$(date -d "$five_resets_at" +%s 2>/dev/null)
+    if [ -n "$reset_epoch" ]; then
+      diff_secs=$(( reset_epoch - $(date +%s) ))
+      if [ "$diff_secs" -gt 0 ]; then
+        hours_left=$(awk "BEGIN { printf \"%.1f\", $diff_secs / 3600 }")
+        five_reset_str=" ${dim}↻${hours_left}h${reset}"
+      fi
+    fi
+  fi
+
+  rate_parts="${rc}5h:${five_int}%${reset}${five_reset_str}"
 fi
 
 if [ -n "$seven_pct" ]; then
