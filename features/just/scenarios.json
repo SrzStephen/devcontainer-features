@@ -1,0 +1,17 @@
+{
+  "scenarios": {
+    "no-lsp": {
+      "options": {
+        "lspVersion": "false"
+      },
+      "testFile": "test/no-lsp/test.sh"
+    },
+    "partial-version": {
+      "options": {
+        "version": "1",
+        "lspVersion": "latest"
+      },
+      "testFile": "test/partial-version/test.sh"
+    }
+  }
+}
