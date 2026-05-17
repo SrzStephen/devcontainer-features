@@ -20,5 +20,14 @@
         "features": {
             "claude-code": {}
         }
+    },
+    "install-plugin": {
+        "image": "debian:bookworm",
+        "features": {
+            "claude-code": {
+                "marketplace": "obra/superpowers-marketplace",
+                "plugin": "superpowers@superpowers-marketplace"
+            }
+        }
     }
 }
