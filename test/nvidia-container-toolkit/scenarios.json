@@ -1,0 +1,16 @@
+{
+    "pinned-version": {
+        "image": "debian:bookworm",
+        "features": {
+            "nvidia-container-toolkit": {
+                "version": "1.17.8"
+            }
+        }
+    },
+    "non-root-user": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "nvidia-container-toolkit": {}
+        }
+    }
+}
