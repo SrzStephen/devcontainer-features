@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck shell=bash
 # Bootstrap: install bash on Alpine if needed, then re-exec under bash.
 if [ -z "${BASH_VERSION:-}" ]; then
     command -v apk >/dev/null 2>&1 && apk add --no-cache bash >/dev/null 2>&1
@@ -64,12 +65,15 @@ fi
 echo "Installing Claude Code via https://claude.ai/install.sh..."
 run_as_user 'curl -fsSL https://claude.ai/install.sh | bash'
 
-# Ensure ~/.local/bin is on PATH in the user's login profile.
-USER_PROFILE="${REMOTE_USER_HOME}/.profile"
-if ! grep -q '\.local/bin' "${USER_PROFILE}" 2>/dev/null; then
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "${USER_PROFILE}"
-    chown "${REMOTE_USER}:${REMOTE_USER}" "${USER_PROFILE}"
-fi
+# Ensure ~/.local/bin is on PATH in login and interactive shells.
+for _dotfile in "${REMOTE_USER_HOME}/.profile" "${REMOTE_USER_HOME}/.bashrc"; do
+    if ! grep -q '\.local/bin' "${_dotfile}" 2>/dev/null; then
+        # shellcheck disable=SC2016
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "${_dotfile}"
+        chown "${REMOTE_USER}:${REMOTE_USER}" "${_dotfile}"
+    fi
+done
+unset _dotfile
 
 if [ -x "${CLAUDE_BIN}" ]; then
     echo "Claude Code $(run_as_user "${CLAUDE_BIN} --version") installed."
