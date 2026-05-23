@@ -26,6 +26,20 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: lint
+        name: lint
+        entry: just lint
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: act-dry
+        name: act-dry
+        entry: just act-dry
+        language: system
+        pass_filenames: false
+        files: ^\.github/workflows/
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
