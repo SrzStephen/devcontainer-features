@@ -8,6 +8,7 @@ all: lint test
 
 lint:
 	find src -name "*.sh" -exec shellcheck {} +
+	prettier --check "**/*.{json,yaml,yml,md}"
 
 test: test-claude-code test-just test-kiro-cli test-nvidia-container-toolkit test-act test-gitlab-ci-local test-prek
 
