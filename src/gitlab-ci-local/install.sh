@@ -36,7 +36,7 @@ resolve_version() {
 export DEBIAN_FRONTEND=noninteractive
 
 if command -v apk >/dev/null 2>&1; then
-    apk add --no-cache curl ca-certificates
+    apk add --no-cache curl ca-certificates gcompat
 else
     if [ "$(find /var/lib/apt/lists/* 2>/dev/null | wc -l)" = "0" ]; then
         apt-get update -y
