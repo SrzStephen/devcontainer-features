@@ -8,7 +8,7 @@ all: lint test
 lint:
 	find src -name "*.sh" | xargs shellcheck
 
-test: test-claude-code test-just test-kiro test-nvidia-container-toolkit
+test: test-claude-code test-just test-kiro-cli test-nvidia-container-toolkit test-act test-gitlab-ci-local test-prek
 
 test-claude-code:
 	devcontainer features test -f claude-code --base-image {{DEBIAN}} -p .
@@ -18,11 +18,23 @@ test-just:
 	devcontainer features test -f just --base-image {{DEBIAN}} -p .
 	devcontainer features test -f just --base-image {{ALPINE}} -p .
 
-test-kiro:
-	devcontainer features test -f kiro --base-image {{DEBIAN}} -p .
+test-kiro-cli:
+	devcontainer features test -f kiro-cli --base-image {{DEBIAN}} -p .
 
 test-nvidia-container-toolkit:
 	devcontainer features test -f nvidia-container-toolkit --base-image {{DEBIAN}} -p .
+
+test-act:
+	devcontainer features test -f act --base-image {{DEBIAN}} -p .
+	devcontainer features test -f act --base-image {{ALPINE}} -p .
+
+test-gitlab-ci-local:
+	devcontainer features test -f gitlab-ci-local --base-image {{DEBIAN}} -p .
+	devcontainer features test -f gitlab-ci-local --base-image {{ALPINE}} -p .
+
+test-prek:
+	devcontainer features test -f prek --base-image {{DEBIAN}} -p .
+	devcontainer features test -f prek --base-image {{ALPINE}} -p .
 
 generate-docs:
 	npx --yes @devcontainers/cli@latest features generate-docs -p . -n SrzStephen/devcontainer-features
