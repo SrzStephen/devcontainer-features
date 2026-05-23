@@ -445,3 +445,6 @@ vite.config.ts.timestamp-*
 
 # Git worktrees
 .worktrees/
+
+# Superpowers planning docs
+docs/superpowers/
