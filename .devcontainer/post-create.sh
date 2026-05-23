@@ -32,3 +32,9 @@ if [ -x "$CLAUDE_BIN" ]; then
 else
   echo "Skipping superpowers install (claude CLI not found)."
 fi
+
+echo "Installing prettier..."
+npm install -g prettier
+
+echo "Installing pre-commit hooks..."
+pre-commit install
