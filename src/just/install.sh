@@ -9,6 +9,7 @@ set -euo pipefail
 
 JUST_VERSION="${VERSION:-"latest"}"
 JUST_LSP_VERSION="${LSPVERSION:-"latest"}"
+REMOTE_USER_HOME="${_REMOTE_USER_HOME:-"/home/${_REMOTE_USER:-"vscode"}"}"
 
 if [ "$(id -u)" -ne 0 ]; then
     echo 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
@@ -63,7 +64,7 @@ mkdir -p "/usr/share/man/man1"
 mv "${tmp}/just.1" "/usr/share/man/man1/just.1"
 rm -rf "${tmp}"
 
-echo -e "\nsource <(just --completions bash)\n" >> "$_REMOTE_USER_HOME/.bashrc"
+echo -e "\nsource <(just --completions bash)\n" >> "${REMOTE_USER_HOME}/.bashrc"
 
 if [ "${JUST_LSP_VERSION}" != "false" ]; then
     JUST_LSP_VERSION="$(resolve_version terror/just-lsp "${JUST_LSP_VERSION}")"
