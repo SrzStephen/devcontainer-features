@@ -1,12 +1,13 @@
 DEBIAN := "debian:bookworm"
 ALPINE := "alpine:3.20"
+REPO := "SrzStephen/devcontainer-features"
 
 default: all
 
 all: lint test
 
 lint:
-	find src -name "*.sh" | xargs shellcheck
+	find src -name "*.sh" -exec shellcheck {} +
 
 test: test-claude-code test-just test-kiro-cli test-nvidia-container-toolkit test-act test-gitlab-ci-local test-prek
 
@@ -37,4 +38,16 @@ test-prek:
 	devcontainer features test -f prek --base-image {{ALPINE}} -p .
 
 generate-docs:
-	npx --yes @devcontainers/cli@latest features generate-docs -p . -n SrzStephen/devcontainer-features
+	npx --yes @devcontainers/cli@latest features generate-docs -p . -n {{REPO}}
+
+act-ci:
+	act -W .github/workflows/ci.yml
+
+act-validate:
+	act -W .github/workflows/validate.yml
+
+act-dry:
+	act -n -W .github/workflows/ci.yml
+	act -n -W .github/workflows/validate.yml
+
+act-all: act-ci act-validate
