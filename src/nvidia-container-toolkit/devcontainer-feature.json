@@ -1,6 +1,6 @@
 {
   "id": "nvidia-container-toolkit",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "name": "NVIDIA Container Toolkit",
   "description": "Installs the NVIDIA Container Toolkit (nvidia-container-toolkit) for GPU-accelerated containers.",
   "documentationURL": "https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html",
@@ -12,7 +12,5 @@
       "description": "Version of nvidia-container-toolkit to install (e.g. '1.17.8'). Use 'latest' for the newest available."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }

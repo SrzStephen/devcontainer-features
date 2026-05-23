@@ -44,10 +44,10 @@ act-ci:
 	act -W .github/workflows/ci.yml
 
 act-validate:
-	act -W .github/workflows/validate.yml
+	act pull_request -W .github/workflows/validate.yml
 
 act-dry:
 	act -n -W .github/workflows/ci.yml
-	act -n -W .github/workflows/validate.yml
+	act pull_request -n -W .github/workflows/validate.yml
 
 act-all: act-ci act-validate
