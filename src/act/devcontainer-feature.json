@@ -1,0 +1,17 @@
+{
+  "id": "act",
+  "version": "0.1.0",
+  "name": "act",
+  "description": "Installs act, a tool to run GitHub Actions locally.",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": ["latest", "0"],
+      "default": "latest",
+      "description": "Version of act to install. Use 'latest' for the newest available."
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}
