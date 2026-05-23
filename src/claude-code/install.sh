@@ -168,4 +168,6 @@ if [ -n "${PLUGIN}" ]; then
     run_as_user "${CLAUDE_BIN} plugin install ${PLUGIN_REF}"
 fi
 
+rm -rf /var/lib/apt/lists/*
+
 echo "Done!"

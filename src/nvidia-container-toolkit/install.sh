@@ -40,4 +40,6 @@ else
         "libnvidia-container1=${PKG_VERSION}"
 fi
 
+rm -rf /var/lib/apt/lists/*
+
 echo "NVIDIA Container Toolkit installation complete."
