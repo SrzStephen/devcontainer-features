@@ -1,0 +1,24 @@
+{
+    "latest-version": {
+        "image": "debian:bookworm",
+        "features": {
+            "gitlab-ci-local": {
+                "version": "latest"
+            }
+        }
+    },
+    "partial-version": {
+        "image": "debian:bookworm",
+        "features": {
+            "gitlab-ci-local": {
+                "version": "4"
+            }
+        }
+    },
+    "non-root-user": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "gitlab-ci-local": {}
+        }
+    }
+}
