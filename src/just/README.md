@@ -1,3 +1,4 @@
+
 # just (just)
 
 Installs just, a handy way to save and run project-specific commands via justfile.
@@ -12,10 +13,10 @@ Installs just, a handy way to save and run project-specific commands via justfil
 
 ## Options
 
-| Options Id | Description                                                          | Type   | Default Value |
-| ---------- | -------------------------------------------------------------------- | ------ | ------------- |
-| version    | Version of just to install. Use 'latest' for the newest available.   | string | latest        |
-| lspVersion | Version of just-lsp to install. Set to 'false' to skip installation. | string | latest        |
+| Options Id | Description | Type | Default Value |
+|-----|-----|-----|-----|
+| version | Version of just to install. Use 'latest' for the newest available. | string | latest |
+| lspVersion | Version of just-lsp to install. Set to 'false' to skip installation. | string | latest |
 
 ## Compatibility
 
@@ -26,6 +27,7 @@ Installs just, a handy way to save and run project-specific commands via justfil
 
 **Architectures:** x86_64, aarch64
 
+
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json). Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/just/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._

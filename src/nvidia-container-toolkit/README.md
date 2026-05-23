@@ -1,3 +1,4 @@
+
 # NVIDIA Container Toolkit (nvidia-container-toolkit)
 
 Installs the NVIDIA Container Toolkit (nvidia-container-toolkit) for GPU-accelerated containers.
@@ -6,15 +7,15 @@ Installs the NVIDIA Container Toolkit (nvidia-container-toolkit) for GPU-acceler
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/nvidia-container-toolkit:1": {}
+    "ghcr.io/SrzStephen/devcontainer-features/nvidia-container-toolkit:0": {}
 }
 ```
 
 ## Options
 
-| Options Id | Description                                                                                            | Type   | Default Value |
-| ---------- | ------------------------------------------------------------------------------------------------------ | ------ | ------------- |
-| version    | Version of nvidia-container-toolkit to install (e.g. '1.17.8'). Use 'latest' for the newest available. | string | latest        |
+| Options Id | Description | Type | Default Value |
+|-----|-----|-----|-----|
+| version | Version of nvidia-container-toolkit to install (e.g. '1.17.8'). Use 'latest' for the newest available. | string | latest |
 
 ## Compatibility
 
@@ -25,6 +26,7 @@ Installs the NVIDIA Container Toolkit (nvidia-container-toolkit) for GPU-acceler
 
 **Architectures:** x86_64, aarch64
 
+
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json). Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/nvidia-container-toolkit/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
