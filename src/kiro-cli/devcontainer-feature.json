@@ -1,0 +1,17 @@
+{
+  "id": "kiro-CLI",
+  "version": "0.1.0",
+  "name": "Kiro CLI",
+  "description": "Installs the Kiro CLI.",
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ],
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": ["latest", "2.3.0"],
+      "default": "latest",
+      "description": "Version of Kiro CLI to install. Use 'latest' for the newest available, or a full version like '2.3.0'."
+    }
+  }
+}

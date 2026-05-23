@@ -1,0 +1,14 @@
+{
+    "non-root-user": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "kiro-cli": {}
+        }
+    },
+    "pinned-version": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "kiro-cli": { "version": "2.3.0" }
+        }
+    }
+}
