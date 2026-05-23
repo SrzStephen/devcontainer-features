@@ -448,3 +448,6 @@ vite.config.ts.timestamp-*
 
 # Superpowers planning docs
 docs/superpowers/
+
+# devcontainer CLI temp files (root-owned, created during local test runs)
+.tmp/
