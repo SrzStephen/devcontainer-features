@@ -25,7 +25,7 @@ resolve_version() {
         dot_count="$(printf '%s' "${version}" | tr -cd '.' | wc -c)"
         if [ "${dot_count}" -lt 2 ]; then
             curl -fsSL "https://api.github.com/repos/${repo}/releases?per_page=100" -o "${tmp}"
-            grep '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//' | grep -m1 "^${version}\."
+            grep '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//' | grep -m1 "^${version//./\\.}\\."
         else
             echo "${version}"
         fi
