@@ -34,7 +34,7 @@ else
 fi
 
 echo "Installing prettier..."
-npm install -g prettier
+npm install -g prettier@3.8.3
 
 echo "Installing pre-commit hooks..."
 pre-commit install

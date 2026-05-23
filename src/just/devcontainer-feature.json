@@ -17,7 +17,5 @@
       "description": "Version of just-lsp to install. Set to 'false' to skip installation."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }

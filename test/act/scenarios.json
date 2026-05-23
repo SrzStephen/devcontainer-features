@@ -1,24 +1,24 @@
 {
-    "latest-version": {
-        "image": "debian:bookworm",
-        "features": {
-            "act": {
-                "version": "latest"
-            }
-        }
-    },
-    "partial-version": {
-        "image": "debian:bookworm",
-        "features": {
-            "act": {
-                "version": "0"
-            }
-        }
-    },
-    "non-root-user": {
-        "image": "mcr.microsoft.com/devcontainers/base:debian",
-        "features": {
-            "act": {}
-        }
+  "latest-version": {
+    "image": "debian:bookworm",
+    "features": {
+      "act": {
+        "version": "latest"
+      }
     }
+  },
+  "partial-version": {
+    "image": "debian:bookworm",
+    "features": {
+      "act": {
+        "version": "0"
+      }
+    }
+  },
+  "non-root-user": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "act": {}
+    }
+  }
 }

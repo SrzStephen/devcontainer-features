@@ -11,7 +11,5 @@
       "description": "Version of act to install. Use 'latest' for the newest available."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }
