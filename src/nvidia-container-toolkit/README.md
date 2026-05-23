@@ -17,6 +17,14 @@ Installs the NVIDIA Container Toolkit (nvidia-container-toolkit) for GPU-acceler
 |-----|-----|-----|-----|
 | version | Version of nvidia-container-toolkit to install (e.g. '1.17.8'). Use 'latest' for the newest available. | string | latest |
 
+## Compatibility
+
+| OS | Supported | Notes |
+|---|---|---|
+| Debian / Ubuntu | ✓ tested | Installed via NVIDIA apt repository |
+| Alpine Linux | not supported | Requires apt; Alpine is not supported |
+
+**Architectures:** x86_64, aarch64
 
 
 ---

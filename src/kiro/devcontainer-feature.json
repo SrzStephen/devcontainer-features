@@ -1,9 +1,0 @@
-{
-  "id": "kiro",
-  "version": "0.1.0",
-  "name": "Kiro",
-  "description": "Installs the Kiro CLI.",
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
-}

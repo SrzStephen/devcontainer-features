@@ -1,8 +1,0 @@
-{
-    "non-root-user": {
-        "image": "mcr.microsoft.com/devcontainers/base:debian",
-        "features": {
-            "kiro": {}
-        }
-    }
-}

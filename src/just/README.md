@@ -18,6 +18,14 @@ Installs just, a handy way to save and run project-specific commands via justfil
 | version | Version of just to install. Use 'latest' for the newest available. | string | latest |
 | lspVersion | Version of just-lsp to install. Set to 'false' to skip installation. | string | latest |
 
+## Compatibility
+
+| OS | Supported | Notes |
+|---|---|---|
+| Debian / Ubuntu | ✓ tested | Primary target |
+| Alpine Linux | ✓ tested | Tested in CI |
+
+**Architectures:** x86_64, aarch64
 
 
 ---
