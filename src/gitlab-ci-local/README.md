@@ -1,3 +1,4 @@
+
 # gitlab-ci-local (gitlab-ci-local)
 
 Installs gitlab-ci-local, a tool to run GitLab CI pipelines locally.
@@ -12,9 +13,9 @@ Installs gitlab-ci-local, a tool to run GitLab CI pipelines locally.
 
 ## Options
 
-| Options Id | Description                                                                   | Type   | Default Value |
-| ---------- | ----------------------------------------------------------------------------- | ------ | ------------- |
-| version    | Version of gitlab-ci-local to install. Use 'latest' for the newest available. | string | latest        |
+| Options Id | Description | Type | Default Value |
+|-----|-----|-----|-----|
+| version | Version of gitlab-ci-local to install. Use 'latest' for the newest available. | string | latest |
 
 ## Compatibility
 
@@ -27,6 +28,7 @@ Installs gitlab-ci-local, a tool to run GitLab CI pipelines locally.
 
 **Runtime note:** `gitlab-ci-local` requires Docker to be available at runtime to execute pipeline jobs.
 
+
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json). Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/gitlab-ci-local/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
