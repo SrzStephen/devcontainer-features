@@ -27,10 +27,11 @@ fi
 
 ARCH="$(uname -m)"
 
-# Prefer .deb on Debian/Ubuntu systems, but extract binaries directly to avoid
-# pulling in GUI library deps (libwebkit2gtk-4.1-0, libgtk-3-0, etc.) that are
-# only required by kiro-cli-desktop, not the headless CLI.
-if command -v dpkg &>/dev/null; then
+# Prefer .deb on Debian/Ubuntu x86_64 systems, but extract binaries directly to
+# avoid pulling in GUI library deps (libwebkit2gtk-4.1-0, libgtk-3-0, etc.) that
+# are only required by kiro-cli-desktop, not the headless CLI.
+# On arm64, the .deb is x86_64-only — fall through to the zip path instead.
+if command -v dpkg &>/dev/null && [ "${ARCH}" = "x86_64" ]; then
     echo "Installing Kiro via .deb package..."
     TMP_DEB="$(mktemp --suffix=.deb)"
     if command -v curl &>/dev/null; then
