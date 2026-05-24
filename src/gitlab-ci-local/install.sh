@@ -35,6 +35,13 @@ resolve_version() {
 
 export DEBIAN_FRONTEND=noninteractive
 
+ARCH="$(uname -m)"
+
+# Detect musl libc (Alpine and similar).
+_is_musl() {
+    ls /lib/ld-musl-* >/dev/null 2>&1
+}
+
 if command -v apk >/dev/null 2>&1; then
     apk add --no-cache curl ca-certificates gcompat
 else
@@ -44,22 +51,31 @@ else
     apt-get install -y --no-install-recommends curl ca-certificates
 fi
 
-case "$(uname -m)" in
-    x86_64)  ARCH="amd64" ;;
-    aarch64) ARCH="arm64" ;;
-    *)
-        echo "(!) Architecture $(uname -m) unsupported"
-        exit 1
-        ;;
-esac
-
 GCL_VERSION="$(resolve_version firecow/gitlab-ci-local "${GCL_VERSION}")"
 
-echo "Downloading gitlab-ci-local ${GCL_VERSION}..."
-tmp="$(mktemp -d)"
-curl -sL "https://github.com/firecow/gitlab-ci-local/releases/download/${GCL_VERSION}/gitlab-ci-local-linux-${ARCH}.tar.gz" | tar xz -C "${tmp}"
-mv "${tmp}/gitlab-ci-local" /usr/local/bin/gitlab-ci-local
-rm -rf "${tmp}"
+# The pre-built binary is glibc-linked. On musl+aarch64 (Alpine arm64), gcompat
+# is insufficient — fall back to npm which works on all libcs.
+if _is_musl && [ "${ARCH}" = "aarch64" ]; then
+    echo "Detected musl libc on aarch64 — installing gitlab-ci-local ${GCL_VERSION} via npm..."
+    if ! command -v npm >/dev/null 2>&1; then
+        apk add --no-cache nodejs npm
+    fi
+    npm install -g "gitlab-ci-local@${GCL_VERSION}"
+else
+    case "${ARCH}" in
+        x86_64)  ARCH="amd64" ;;
+        aarch64) ARCH="arm64" ;;
+        *)
+            echo "(!) Architecture ${ARCH} unsupported"
+            exit 1
+            ;;
+    esac
+    echo "Downloading gitlab-ci-local ${GCL_VERSION}..."
+    tmp="$(mktemp -d)"
+    curl -sL "https://github.com/firecow/gitlab-ci-local/releases/download/${GCL_VERSION}/gitlab-ci-local-linux-${ARCH}.tar.gz" | tar xz -C "${tmp}"
+    mv "${tmp}/gitlab-ci-local" /usr/local/bin/gitlab-ci-local
+    rm -rf "${tmp}"
+fi
 
 rm -rf /var/lib/apt/lists/*
 
