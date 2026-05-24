@@ -111,14 +111,16 @@ test-prek-arm64:
 generate-docs:
 	npx --yes @devcontainers/cli@latest features generate-docs -p . -n {{REPO}}
 
+ACT_OPTS := '--container-options "-v /tmp:/tmp" --concurrent-jobs 4'
+
 act-ci:
-	act -W .github/workflows/ci.yml
+	act {{ACT_OPTS}} -W .github/workflows/ci.yml
 
 act-validate:
-	act pull_request -W .github/workflows/validate.yml
+	act pull_request {{ACT_OPTS}} -W .github/workflows/validate.yml
 
 act-dry:
-	act -n -W .github/workflows/ci.yml
-	act pull_request -n -W .github/workflows/validate.yml
+	act -n {{ACT_OPTS}} -W .github/workflows/ci.yml
+	act pull_request -n {{ACT_OPTS}} -W .github/workflows/validate.yml
 
 act-all: act-ci act-validate
