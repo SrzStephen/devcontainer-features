@@ -131,6 +131,7 @@ if [ "${STATUSLINE}" = "true" ]; then
 
     cp "${SCRIPT_DIR}/statusline.sh" "${CLAUDE_SETTINGS_DIR}/statusline-command.sh"
     chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS_DIR}/statusline-command.sh"
+    chmod +x "${CLAUDE_SETTINGS_DIR}/statusline-command.sh"
     echo "Statusline script installed to ${CLAUDE_SETTINGS_DIR}/statusline-command.sh."
 
     if [ -f "${CLAUDE_SETTINGS}" ] && jq -e '.statusLine' "${CLAUDE_SETTINGS}" &>/dev/null; then
