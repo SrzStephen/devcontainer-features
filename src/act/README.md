@@ -1,3 +1,4 @@
+
 # act (act)
 
 Installs act, a tool to run GitHub Actions locally.
@@ -12,9 +13,9 @@ Installs act, a tool to run GitHub Actions locally.
 
 ## Options
 
-| Options Id | Description                                                       | Type   | Default Value |
-| ---------- | ----------------------------------------------------------------- | ------ | ------------- |
-| version    | Version of act to install. Use 'latest' for the newest available. | string | latest        |
+| Options Id | Description | Type | Default Value |
+|-----|-----|-----|-----|
+| version | Version of act to install. Use 'latest' for the newest available. | string | latest |
 
 ## Compatibility
 
@@ -27,6 +28,7 @@ Installs act, a tool to run GitHub Actions locally.
 
 **Runtime note:** `act` requires Docker to be available at runtime to execute GitHub Actions workflows.
 
+
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json). Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/act/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._

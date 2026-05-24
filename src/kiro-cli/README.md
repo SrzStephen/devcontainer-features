@@ -1,6 +1,7 @@
-# Kiro CLI (kiro-CLI)
 
-Installs the Kiro CLI.
+# Kiro cli (kiro-cli)
+
+Installs the Kiro cli.
 
 ## Example Usage
 
@@ -9,6 +10,12 @@ Installs the Kiro CLI.
     "ghcr.io/SrzStephen/devcontainer-features/kiro-cli:0": {}
 }
 ```
+
+## Options
+
+| Options Id | Description | Type | Default Value |
+|-----|-----|-----|-----|
+| version | Version of Kiro CLI to install. Use 'latest' for the newest available, or a full version like '2.3.0'. | string | latest |
 
 ## Compatibility
 
@@ -19,6 +26,7 @@ Installs the Kiro CLI.
 
 **Architectures:** x86_64, aarch64
 
+
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json). Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/kiro-cli/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
