@@ -43,31 +43,64 @@ test-prek:
 	devcontainer features test -f prek --base-image {{DEBIAN}} -p .
 	devcontainer features test -f prek --base-image {{ALPINE}} -p .
 
+_build-arm64 feature base:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    tag="devcontainer-feature-arm64/{{feature}}:$(echo '{{base}}' | tr ':/' '-')"
+    docker buildx build \
+        --platform linux/arm64 \
+        --build-arg BASE_IMAGE={{base}} \
+        --build-context feature=./src/{{feature}} \
+        --build-context tests=./test/{{feature}} \
+        --build-context testlib=./test \
+        -t "$tag" \
+        --load \
+        -f test/Dockerfile.arm64 \
+        .
+
+_run-arm64 feature base:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    tag="devcontainer-feature-arm64/{{feature}}:$(echo '{{base}}' | tr ':/' '-')"
+    docker run --rm --platform linux/arm64 "$tag" bash -c "cd /tmp/tests && bash test.sh"
+
 test-claude-code-arm64:
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f claude-code --base-image {{DEBIAN}} -p .
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f claude-code --base-image {{ALPINE}} -p .
+    just _build-arm64 claude-code {{DEBIAN}}
+    just _run-arm64 claude-code {{DEBIAN}}
+    just _build-arm64 claude-code {{ALPINE}}
+    just _run-arm64 claude-code {{ALPINE}}
 
 test-just-arm64:
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f just --base-image {{DEBIAN}} -p .
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f just --base-image {{ALPINE}} -p .
+    just _build-arm64 just {{DEBIAN}}
+    just _run-arm64 just {{DEBIAN}}
+    just _build-arm64 just {{ALPINE}}
+    just _run-arm64 just {{ALPINE}}
 
 test-kiro-cli-arm64:
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f kiro-cli --base-image {{DEBIAN}} -p .
+    just _build-arm64 kiro-cli {{DEBIAN}}
+    just _run-arm64 kiro-cli {{DEBIAN}}
 
 test-nvidia-container-toolkit-arm64:
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f nvidia-container-toolkit --base-image {{DEBIAN}} -p .
+    just _build-arm64 nvidia-container-toolkit {{DEBIAN}}
+    just _run-arm64 nvidia-container-toolkit {{DEBIAN}}
 
 test-act-arm64:
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f act --base-image {{DEBIAN}} -p .
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f act --base-image {{ALPINE}} -p .
+    just _build-arm64 act {{DEBIAN}}
+    just _run-arm64 act {{DEBIAN}}
+    just _build-arm64 act {{ALPINE}}
+    just _run-arm64 act {{ALPINE}}
 
 test-gitlab-ci-local-arm64:
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f gitlab-ci-local --base-image {{DEBIAN}} -p .
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f gitlab-ci-local --base-image {{ALPINE}} -p .
+    just _build-arm64 gitlab-ci-local {{DEBIAN}}
+    just _run-arm64 gitlab-ci-local {{DEBIAN}}
+    just _build-arm64 gitlab-ci-local {{ALPINE}}
+    just _run-arm64 gitlab-ci-local {{ALPINE}}
 
 test-prek-arm64:
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f prek --base-image {{DEBIAN}} -p .
-	DOCKER_DEFAULT_PLATFORM=linux/arm64 devcontainer features test -f prek --base-image {{ALPINE}} -p .
+    just _build-arm64 prek {{DEBIAN}}
+    just _run-arm64 prek {{DEBIAN}}
+    just _build-arm64 prek {{ALPINE}}
+    just _run-arm64 prek {{ALPINE}}
 
 generate-docs:
 	npx --yes @devcontainers/cli@latest features generate-docs -p . -n {{REPO}}

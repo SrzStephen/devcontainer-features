@@ -1,0 +1,19 @@
+ARG BASE_IMAGE=debian:bookworm
+FROM ${BASE_IMAGE}
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Install the feature using root as the remote user (plain base images have no vscode user)
+ENV _REMOTE_USER=root
+ENV _REMOTE_USER_HOME=/root
+
+COPY --from=feature . /tmp/feature/
+RUN chmod +x /tmp/feature/install.sh && cd /tmp/feature && ./install.sh
+
+# Ensure ~/.local/bin is on PATH for non-login shells (install.sh adds it to .profile/.bashrc
+# but those are not sourced in non-interactive container runs)
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Copy test scripts and the test helper library alongside them
+COPY --from=tests . /tmp/tests/
+COPY --from=testlib dev-container-features-test-lib /tmp/tests/dev-container-features-test-lib
