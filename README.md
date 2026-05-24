@@ -34,17 +34,13 @@ See each feature's README for available options.
 
 **Prerequisites:** [`just`](https://github.com/casey/just), [`shellcheck`](https://www.shellcheck.net/), [`devcontainer` CLI](https://github.com/devcontainers/cli), Docker
 
-| Command               | Description                                                       |
-| --------------------- | ----------------------------------------------------------------- |
-| `just`                | Lint and test everything                                          |
-| `just lint`           | Shellcheck all `.sh` files                                        |
-| `just test`           | Run all feature tests                                             |
-| `just test-<feature>` | Test a single feature (e.g. `just test-act`)                      |
-| `just generate-docs`  | Regenerate each feature's README from `devcontainer-feature.json` |
-| `just act-ci`         | Run the CI workflow locally with `act`                            |
-| `just act-validate`   | Run the validate workflow locally with `act`                      |
-| `just act-dry`        | Dry-run both workflows without executing jobs                     |
-| `just act-all`        | Run both workflows locally with `act`                             |
+```bash
+just        # lint + test everything
+just lint   # shellcheck + prettier
+just test   # all feature tests (x86)
+```
+
+See [TESTING.md](TESTING.md) for the full testing guide, including arm64 local testing and CI structure.
 
 ### Commit format
 
