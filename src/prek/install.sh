@@ -57,7 +57,20 @@ PREK_VERSION="$(resolve_version j178/prek "${PREK_VERSION}")"
 
 echo "Downloading prek ${PREK_VERSION}..."
 tmp="$(mktemp -d)"
-curl -sL "https://github.com/j178/prek/releases/download/v${PREK_VERSION}/prek-${ARCH}.tar.gz" | tar xz -C "${tmp}"
+archive="${tmp}/prek.tar.gz"
+prek_url="https://github.com/j178/prek/releases/download/v${PREK_VERSION}/prek-${ARCH}.tar.gz"
+for attempt in 1 2 3; do
+    if curl -fsSL "${prek_url}" -o "${archive}"; then
+        break
+    elif [ "${attempt}" -lt 3 ]; then
+        echo "Download attempt ${attempt} failed, retrying in 5s..."
+        sleep 5
+    else
+        echo "ERROR: Failed to download prek after 3 attempts"
+        exit 1
+    fi
+done
+tar xzf "${archive}" -C "${tmp}"
 mv "${tmp}/prek-${ARCH}/prek" /usr/local/bin/prek
 rm -rf "${tmp}"
 

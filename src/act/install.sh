@@ -57,7 +57,20 @@ ACT_VERSION="$(resolve_version nektos/act "${ACT_VERSION}")"
 
 echo "Downloading act ${ACT_VERSION}..."
 tmp="$(mktemp -d)"
-curl -sL "https://github.com/nektos/act/releases/download/v${ACT_VERSION}/act_Linux_${ARCH}.tar.gz" | tar xz -C "${tmp}"
+archive="${tmp}/act.tar.gz"
+act_url="https://github.com/nektos/act/releases/download/v${ACT_VERSION}/act_Linux_${ARCH}.tar.gz"
+for attempt in 1 2 3; do
+    if curl -fsSL "${act_url}" -o "${archive}"; then
+        break
+    elif [ "${attempt}" -lt 3 ]; then
+        echo "Download attempt ${attempt} failed, retrying in 5s..."
+        sleep 5
+    else
+        echo "ERROR: Failed to download act after 3 attempts"
+        exit 1
+    fi
+done
+tar xzf "${archive}" -C "${tmp}"
 mv "${tmp}/act" /usr/local/bin/act
 rm -rf "${tmp}"
 

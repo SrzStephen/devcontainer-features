@@ -72,7 +72,20 @@ else
     esac
     echo "Downloading gitlab-ci-local ${GCL_VERSION}..."
     tmp="$(mktemp -d)"
-    curl -sL "https://github.com/firecow/gitlab-ci-local/releases/download/${GCL_VERSION}/gitlab-ci-local-linux-${ARCH}.tar.gz" | tar xz -C "${tmp}"
+    archive="${tmp}/gitlab-ci-local.tar.gz"
+    gcl_url="https://github.com/firecow/gitlab-ci-local/releases/download/${GCL_VERSION}/gitlab-ci-local-linux-${ARCH}.tar.gz"
+    for attempt in 1 2 3; do
+        if curl -fsSL "${gcl_url}" -o "${archive}"; then
+            break
+        elif [ "${attempt}" -lt 3 ]; then
+            echo "Download attempt ${attempt} failed, retrying in 5s..."
+            sleep 5
+        else
+            echo "ERROR: Failed to download gitlab-ci-local after 3 attempts"
+            exit 1
+        fi
+    done
+    tar xzf "${archive}" -C "${tmp}"
     mv "${tmp}/gitlab-ci-local" /usr/local/bin/gitlab-ci-local
     rm -rf "${tmp}"
 fi

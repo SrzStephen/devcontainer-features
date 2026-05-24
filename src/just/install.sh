@@ -58,7 +58,20 @@ JUST_VERSION="$(resolve_version casey/just "${JUST_VERSION}")"
 
 echo "Downloading just ${JUST_VERSION}..."
 tmp="$(mktemp -d)"
-curl -sL "https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-$(uname -m)-unknown-linux-musl.tar.gz" | tar xz -C "${tmp}"
+archive="${tmp}/just.tar.gz"
+just_url="https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-$(uname -m)-unknown-linux-musl.tar.gz"
+for attempt in 1 2 3; do
+    if curl -fsSL "${just_url}" -o "${archive}"; then
+        break
+    elif [ "${attempt}" -lt 3 ]; then
+        echo "Download attempt ${attempt} failed, retrying in 5s..."
+        sleep 5
+    else
+        echo "ERROR: Failed to download just after 3 attempts"
+        exit 1
+    fi
+done
+tar xzf "${archive}" -C "${tmp}"
 mv "${tmp}/just" /usr/local/bin/just
 mkdir -p "/usr/share/man/man1"
 mv "${tmp}/just.1" "/usr/share/man/man1/just.1"
@@ -70,7 +83,20 @@ if [ "${JUST_LSP_VERSION}" != "false" ]; then
     JUST_LSP_VERSION="$(resolve_version terror/just-lsp "${JUST_LSP_VERSION}")"
     echo "Downloading just-lsp ${JUST_LSP_VERSION}..."
     tmp="$(mktemp -d)"
-    curl -sL "https://github.com/terror/just-lsp/releases/download/${JUST_LSP_VERSION}/just-lsp-${JUST_LSP_VERSION}-$(uname -m)-unknown-linux-musl.tar.gz" | tar xz -C "${tmp}"
+    archive="${tmp}/just-lsp.tar.gz"
+    lsp_url="https://github.com/terror/just-lsp/releases/download/${JUST_LSP_VERSION}/just-lsp-${JUST_LSP_VERSION}-$(uname -m)-unknown-linux-musl.tar.gz"
+    for attempt in 1 2 3; do
+        if curl -fsSL "${lsp_url}" -o "${archive}"; then
+            break
+        elif [ "${attempt}" -lt 3 ]; then
+            echo "Download attempt ${attempt} failed, retrying in 5s..."
+            sleep 5
+        else
+            echo "ERROR: Failed to download just-lsp after 3 attempts"
+            exit 1
+        fi
+    done
+    tar xzf "${archive}" -C "${tmp}"
     mv "${tmp}/just-lsp" /usr/local/bin/just-lsp
     rm -rf "${tmp}"
     echo "just-lsp ${JUST_LSP_VERSION} installed."
