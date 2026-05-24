@@ -35,7 +35,7 @@ jobs:
             if [ -z "$latest_tag" ]; then
               changed=true
             else
-              diff_output=$(git diff --name-only "$latest_tag" HEAD -- "src/$feature/")
+              diff_output=$(git diff --name-only "$latest_tag" HEAD -- "src/$feature/" ":(exclude)src/$feature/README.md")
               [ -n "$diff_output" ] && changed=true || changed=false
             fi
 
