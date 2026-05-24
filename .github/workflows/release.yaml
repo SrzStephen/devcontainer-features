@@ -23,7 +23,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-          changed_files=""
+          changed_files=()
 
           for feature_dir in src/*/; do
             feature=$(basename "$feature_dir")
@@ -41,19 +41,27 @@ jobs:
 
             if [ "$changed" = "true" ]; then
               current=$(jq -r '.version' "$json")
+              if ! echo "$current" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+                echo "WARNING: $feature has malformed version '$current', skipping"
+                continue
+              fi
               IFS='.' read -r major minor patch <<< "$current"
               new_version="$major.$minor.$((patch + 1))"
               tmp=$(mktemp)
               jq --arg v "$new_version" '.version = $v' "$json" > "$tmp" && mv "$tmp" "$json"
               echo "Bumped $feature: $current → $new_version"
-              changed_files="$changed_files $json"
+              changed_files+=("$json")
             fi
           done
 
-          if [ -n "$changed_files" ]; then
-            # shellcheck disable=SC2086
-            git add $changed_files
+          if [ "${#changed_files[@]}" -gt 0 ]; then
+            git add "${changed_files[@]}"
             git commit -m "chore: bump versions for changed features [skip ci]"
+            git fetch origin main
+            git merge-base --is-ancestor origin/main HEAD || {
+              echo "ERROR: HEAD is not ahead of origin/main — refusing to push"
+              exit 1
+            }
             git push origin HEAD:main
           else
             echo "No features changed — skipping version bump commit"
