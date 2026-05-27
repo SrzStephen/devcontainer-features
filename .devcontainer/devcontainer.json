@@ -29,8 +29,8 @@
   },
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": { "moby": false },
-    "ghcr.io/devcontainers-contrib/features/shellcheck:1": {},
-    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
+    "ghcr.io/devcontainers-extras/features/shellcheck:1": {},
+    "ghcr.io/devcontainers-extras/features/pre-commit:2": {},
     "ghcr.io/devcontainers/features/rust:1": {},
     "ghcr.io/devcontainers/features/node:1": {},
     "ghcr.io/devcontainer-community/devcontainer-features/github.com-cli:1": {},
