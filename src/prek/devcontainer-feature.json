@@ -6,15 +6,10 @@
   "options": {
     "version": {
       "type": "string",
-      "proposals": [
-        "latest",
-        "0"
-      ],
+      "proposals": ["latest", "0"],
       "default": "latest",
       "description": "Version of prek to install. Use 'latest' for the newest available."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }

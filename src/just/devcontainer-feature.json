@@ -6,25 +6,16 @@
   "options": {
     "version": {
       "type": "string",
-      "proposals": [
-        "latest",
-        "1"
-      ],
+      "proposals": ["latest", "1"],
       "default": "latest",
       "description": "Version of just to install. Use 'latest' for the newest available."
     },
     "lspVersion": {
       "type": "string",
-      "proposals": [
-        "latest",
-        "false",
-        "0.4.2"
-      ],
+      "proposals": ["latest", "false", "0.4.2"],
       "default": "latest",
       "description": "Version of just-lsp to install. Set to 'false' to skip installation."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }
