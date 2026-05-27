@@ -1,6 +1,6 @@
 {
   "id": "claude-code",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "name": "Claude Code",
   "description": "Installs Claude Code CLI and optionally configures plugin marketplaces, plugins, attribution settings and custom statusline.",
   "options": {
@@ -25,5 +25,7 @@
       "description": "When true, installs statusline.sh to ~/.claude/statusline-command.sh and configures it as the Claude Code status line in ~/.claude/settings.json."
     }
   },
-  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
 }
