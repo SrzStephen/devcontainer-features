@@ -35,20 +35,20 @@ The Claude Code status line runs the script `~/.claude/statusline.sh` on each as
 
 ### What it shows
 
-| Segment      | Example                               | Description                                                 |
-| ------------ | ------------------------------------- | ----------------------------------------------------------- |
-| 🤖 Model     | `🤖 Sonnet`                           | Current model name                                          |
-| 📁 Directory | `📁 devcontainer-features`            | Current working directory (basename only)                   |
-| 🌿 Branch    | `🌿 main`                             | Git branch (omitted outside a git repo)                     |
-| 🔗 Repo      | `🔗 SrzStephen/devcontainer-features` | Clickable OSC 8 hyperlink to remote (Cmd/Ctrl+click)        |
-| ctx          | `ctx: 15k/200k (8%)`                  | Context window: tokens used / max size / percentage         |
-| 5h           | `5h: 24% (resets in 1h 45m)`          | 5-hour rate limit usage and time until reset (Pro/Max only) |
-| 7d           | `7d: 41% (resets in 3d 5h)`           | 7-day rate limit usage and time until reset (Pro/Max only)  |
+| Segment      | Example                               | Description                                                        |
+| ------------ | ------------------------------------- | ------------------------------------------------------------------ |
+| 🤖 Model     | `🤖 sonnet-4.6 High`                  | Current model name and thinking level (omitted when none/not set)  |
+| 📁 Directory | `📁 devcontainer-features`            | Current working directory (basename only)                          |
+| 🌿 Branch    | `🌿 main`                             | Git branch (omitted outside a git repo)                            |
+| 🔗 Repo      | `🔗 SrzStephen/devcontainer-features` | Clickable OSC 8 hyperlink to remote (Cmd/Ctrl+click)               |
+| ctx          | `ctx: 15k/200k (8%)`                  | Context window: tokens used / max size / percentage                |
+| 5h           | `5h: 24% (resets in 1h 45m)`          | 5-hour rate limit usage and time until reset (Pro/Max only)        |
+| 7d           | `7d: 41% (resets in 3d 5h)`           | 7-day rate limit usage and time until reset (Pro/Max only)         |
 
 ### Example output
 
 ```
-🤖 Sonnet | 📁 devcontainer-features | 🌿 main | 🔗 SrzStephen/devcontainer-features | ctx: 15k/200k (8%) | 5h: 24% (resets in 1h 45m) | 7d: 41% (resets in 3d 5h)
+🤖 sonnet-4.6 High | 📁 devcontainer-features | 🌿 main | 🔗 SrzStephen/devcontainer-features | ctx: 15k/200k (8%) | 5h: 24% (resets in 1h 45m) | 7d: 41% (resets in 3d 5h)
 ```
 
 The `🔗` segment is a clickable hyperlink in terminals that support OSC 8 (iTerm2, Kitty, WezTerm). It opens the GitHub repository in your browser. If your terminal doesn't support hyperlinks, set `FORCE_HYPERLINK=1` before launching Claude Code.

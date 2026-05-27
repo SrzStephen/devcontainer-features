@@ -44,7 +44,20 @@ model_short=$(printf '%s' "$model_display" \
   | sed -E 's/^([a-z]+)[[:space:]]+([0-9]+\.[0-9]+)$/\1-\2/' \
   | sed -E 's/^([0-9]+\.[0-9]+)[[:space:]]+([a-z]+)$/\2-\1/')
 
-model_str="${bold}${fg_cyan}🤖 ${model_short}${reset}"
+effort_level=$(printf '%s' "$input" | jq -r '.effort.level // empty')
+effort_text=""
+if [ -n "$effort_level" ] && [ "$effort_level" != "none" ]; then
+  case "$effort_level" in
+    low)    effort_text=" Low"    ;;
+    medium) effort_text=" Medium" ;;
+    high)   effort_text=" High"   ;;
+    xhigh)  effort_text=" XHigh"  ;;
+    max)    effort_text=" Max"    ;;
+    *)      effort_text=" ${effort_level}" ;;
+  esac
+fi
+
+model_str="${bold}${fg_cyan}🤖 ${model_short}${effort_text}${reset}"
 
 # ---------------------------------------------------------------------------
 # 2. Current directory
@@ -165,25 +178,6 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 6. Effort level
-# ---------------------------------------------------------------------------
-effort=$(printf '%s' "$input" | jq -r '.effort.level // empty')
-
-if [ -n "$effort" ]; then
-  case "$effort" in
-    low)    effort_icon="▱▱▱" ; effort_color="$fg_grey"       ;;
-    medium) effort_icon="▰▱▱" ; effort_color="$fg_yellow"     ;;
-    high)   effort_icon="▰▰▱" ; effort_color="$fg_orange"     ;;
-    xhigh)  effort_icon="▰▰▰" ; effort_color="$fg_red"        ;;
-    max)    effort_icon="▰▰▰" ; effort_color="${bold}${fg_red}" ;;
-    *)      effort_icon="$effort" ; effort_color="$fg_grey"    ;;
-  esac
-  effort_str="${effort_color} ${effort_icon}${reset}"
-else
-  effort_str=""
-fi
-
-# ---------------------------------------------------------------------------
 # 7. Rate limits (5h and 7d) with full reset countdown
 # ---------------------------------------------------------------------------
 _format_reset() {
@@ -252,10 +246,6 @@ line="${line}  ${SEP}  ${ctx_str}"
 
 if [ -n "$lines_str" ]; then
   line="${line}  ${SEP}  ${lines_str}"
-fi
-
-if [ -n "$effort_str" ]; then
-  line="${line}  ${SEP}  ${effort_str}"
 fi
 
 printf "%b\n" "$line"
