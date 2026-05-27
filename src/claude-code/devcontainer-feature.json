@@ -1,18 +1,18 @@
 {
   "id": "claude-code",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "name": "Claude Code",
   "description": "Installs Claude Code CLI and optionally configures plugin marketplaces, plugins, attribution settings and custom statusline.",
   "options": {
     "marketplace": {
       "type": "string",
       "default": "",
-      "description": "Plugin marketplace to register. Accepts owner/repo shorthand (e.g. obra/superpowers-marketplace) or a full GitHub URL (e.g. https://github.com/obra/superpowers-marketplace). Skipped when empty."
+      "description": "Comma-separated list of plugin marketplaces to register. Each entry accepts owner/repo shorthand (e.g. obra/superpowers-marketplace) or a full GitHub URL (e.g. https://github.com/obra/superpowers-marketplace). Skipped when empty."
     },
     "plugin": {
       "type": "string",
       "default": "",
-      "description": "Plugin to install after the marketplace is configured. Accepts plugin-name@marketplace-name format (e.g. superpowers@superpowers-marketplace) or a full GitHub URL. Skipped when empty."
+      "description": "Comma-separated list of plugins to install after marketplaces are configured. Each entry accepts plugin-name@marketplace-name format (e.g. superpowers@superpowers-marketplace) or a full GitHub URL. Skipped when empty."
     },
     "removeAttribution": {
       "type": "boolean",
@@ -25,7 +25,5 @@
       "description": "When true, installs statusline.sh to ~/.claude/statusline-command.sh and configures it as the Claude Code status line in ~/.claude/settings.json."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }

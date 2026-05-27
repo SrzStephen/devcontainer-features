@@ -154,9 +154,14 @@ fi
 # ---------------------------------------------------------------------------
 
 if [ -n "${MARKETPLACE}" ]; then
-    MARKETPLACE_REF=$(normalize_gh_ref "${MARKETPLACE}")
-    echo "Adding plugin marketplace: ${MARKETPLACE_REF}"
-    run_as_user "${CLAUDE_BIN} plugin marketplace add ${MARKETPLACE_REF}"
+    IFS=',' read -ra _marketplaces <<< "${MARKETPLACE}"
+    for _m in "${_marketplaces[@]}"; do
+        _m="$(echo "$_m" | xargs)"
+        [ -z "$_m" ] && continue
+        _m_ref=$(normalize_gh_ref "$_m")
+        echo "Adding plugin marketplace: ${_m_ref}"
+        run_as_user "${CLAUDE_BIN} plugin marketplace add ${_m_ref}"
+    done
 fi
 
 # ---------------------------------------------------------------------------
@@ -164,9 +169,14 @@ fi
 # ---------------------------------------------------------------------------
 
 if [ -n "${PLUGIN}" ]; then
-    PLUGIN_REF=$(normalize_gh_ref "${PLUGIN}")
-    echo "Installing plugin: ${PLUGIN_REF}"
-    run_as_user "${CLAUDE_BIN} plugin install ${PLUGIN_REF}"
+    IFS=',' read -ra _plugins <<< "${PLUGIN}"
+    for _p in "${_plugins[@]}"; do
+        _p="$(echo "$_p" | xargs)"
+        [ -z "$_p" ] && continue
+        _p_ref=$(normalize_gh_ref "$_p")
+        echo "Installing plugin: ${_p_ref}"
+        run_as_user "${CLAUDE_BIN} plugin install ${_p_ref}"
+    done
 fi
 
 rm -rf /var/lib/apt/lists/*
