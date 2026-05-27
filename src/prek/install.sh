@@ -16,21 +16,30 @@ fi
 
 # Resolve "latest", "0", or "0.4" to a full version; pass through "0.4.1".
 resolve_version() {
-    local repo="$1" version="$2" tmp dot_count
-    tmp="$(mktemp)"
+    local repo="$1" version="$2" tmp dot_count result
     if [ "${version}" = "latest" ]; then
-        curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" -o "${tmp}"
-        grep -m1 '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//'
+        result="$(curl -fsSL "https://github.com/${repo}/releases/latest" \
+            -o /dev/null -w '%{url_effective}' | sed 's|.*/||; s/^v//' || true)"
     else
         dot_count="$(printf '%s' "${version}" | tr -cd '.' | wc -c)"
         if [ "${dot_count}" -lt 2 ]; then
-            curl -fsSL "https://api.github.com/repos/${repo}/releases?per_page=100" -o "${tmp}"
-            grep '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//' | grep -m1 "^${version//./\\.}\\."
+            tmp="$(mktemp)"
+            local -a curl_opts=(-fsSL)
+            if [ -n "${GITHUB_TOKEN:-}" ]; then
+                curl_opts+=(-H "Authorization: token ${GITHUB_TOKEN}")
+            fi
+            curl "${curl_opts[@]}" "https://api.github.com/repos/${repo}/releases?per_page=100" -o "${tmp}"
+            result="$(grep '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//' | grep -m1 "^${version//./\\.}\\." || true)"
+            rm -f "${tmp}"
         else
-            echo "${version}"
+            result="${version}"
         fi
     fi
-    rm -f "${tmp}"
+    if [ -z "${result}" ]; then
+        echo "ERROR: Failed to resolve version for ${repo}" >&2
+        return 1
+    fi
+    echo "${result}"
 }
 
 export DEBIAN_FRONTEND=noninteractive
