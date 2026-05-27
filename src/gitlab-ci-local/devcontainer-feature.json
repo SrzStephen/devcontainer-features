@@ -6,15 +6,10 @@
   "options": {
     "version": {
       "type": "string",
-      "proposals": [
-        "latest",
-        "4"
-      ],
+      "proposals": ["latest", "4"],
       "default": "latest",
       "description": "Version of gitlab-ci-local to install. Use 'latest' for the newest available."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }
