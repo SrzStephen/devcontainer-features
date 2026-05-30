@@ -11,6 +11,7 @@ MARKETPLACE="${MARKETPLACE:-""}"
 PLUGIN="${PLUGIN:-""}"
 REMOVE_ATTRIBUTION="${REMOVEATTRIBUTION:-"false"}"
 STATUSLINE="${STATUSLINE:-"false"}"
+PLAN_MODE="${PLANMODE:-"false"}"
 
 REMOTE_USER="${_REMOTE_USER:-"vscode"}"
 REMOTE_USER_HOME="${_REMOTE_USER_HOME:-"/home/${REMOTE_USER}"}"
@@ -64,7 +65,7 @@ if { [ -n "${MARKETPLACE}" ] || [ -n "${PLUGIN}" ]; } && ! command -v git &>/dev
     _install_pkg git ca-certificates
 fi
 
-if { [ "${REMOVE_ATTRIBUTION}" = "true" ] || [ "${STATUSLINE}" = "true" ] || [ -n "${MARKETPLACE}" ] || [ -n "${PLUGIN}" ]; } && ! command -v jq &>/dev/null; then
+if { [ "${REMOVE_ATTRIBUTION}" = "true" ] || [ "${STATUSLINE}" = "true" ] || [ "${PLAN_MODE}" = "true" ] || [ -n "${MARKETPLACE}" ] || [ -n "${PLUGIN}" ]; } && ! command -v jq &>/dev/null; then
     _install_pkg jq
 fi
 
@@ -114,6 +115,32 @@ if [ "${REMOVE_ATTRIBUTION}" = "true" ]; then
         printf '{"attribution":{"commit":"","pr":""}}\n' > "${CLAUDE_SETTINGS}"
         chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS}"
         echo "Attribution removed from Claude settings."
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# Plan Mode
+# ---------------------------------------------------------------------------
+
+if [ "${PLAN_MODE}" = "true" ]; then
+    CLAUDE_SETTINGS="${REMOTE_USER_HOME}/.claude/settings.json"
+    CLAUDE_SETTINGS_DIR="$(dirname "${CLAUDE_SETTINGS}")"
+
+    mkdir -p "${CLAUDE_SETTINGS_DIR}"
+    chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS_DIR}"
+
+    if [ -f "${CLAUDE_SETTINGS}" ] && jq -e '.permissions.defaultMode' "${CLAUDE_SETTINGS}" &>/dev/null; then
+        echo "permissions.defaultMode already configured in ${CLAUDE_SETTINGS}, skipping."
+    elif [ -f "${CLAUDE_SETTINGS}" ]; then
+        tmp=$(mktemp)
+        jq '. + {"permissions": (.permissions // {} | . + {"defaultMode": "plan"})}' "${CLAUDE_SETTINGS}" > "${tmp}"
+        mv "${tmp}" "${CLAUDE_SETTINGS}"
+        chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS}"
+        echo "Plan mode set as default in ${CLAUDE_SETTINGS}."
+    else
+        printf '{"permissions":{"defaultMode":"plan"}}\n' > "${CLAUDE_SETTINGS}"
+        chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS}"
+        echo "Plan mode set as default in ${CLAUDE_SETTINGS}."
     fi
 fi
 

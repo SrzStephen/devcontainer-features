@@ -38,5 +38,13 @@
         "plugin": "superpowers@superpowers-marketplace"
       }
     }
+  },
+  "plan-mode": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {
+        "planMode": "true"
+      }
+    }
   }
 }

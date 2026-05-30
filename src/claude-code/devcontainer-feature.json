@@ -23,6 +23,11 @@
       "type": "boolean",
       "default": false,
       "description": "When true, installs statusline.sh to ~/.claude/statusline-command.sh and configures it as the Claude Code status line in ~/.claude/settings.json."
+    },
+    "planMode": {
+      "type": "boolean",
+      "default": true,
+      "description": "When true, sets plan mode as the default permission mode in ~/.claude/settings.json, so Claude plans before executing actions."
     }
   },
   "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
