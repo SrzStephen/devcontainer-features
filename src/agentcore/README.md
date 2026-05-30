@@ -11,6 +11,8 @@ Installs the AWS Bedrock AgentCore CLI (@aws/agentcore) for building and deployi
 }
 ```
 
+
+
 ## Compatibility
 
 | OS              | Supported   | Notes                          |

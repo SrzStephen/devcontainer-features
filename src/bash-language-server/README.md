@@ -1,6 +1,7 @@
+
 # bash Language Server (bash-language-server)
 
-Installs [bash-language-server](https://github.com/bash-lsp/bash-language-server) via npm. Optionally installs shellcheck if not already present.
+Installs bash-language-server via npm. Optionally installs shellcheck if not already present.
 
 ## Example Usage
 
@@ -25,6 +26,7 @@ Installs [bash-language-server](https://github.com/bash-lsp/bash-language-server
 | Alpine Linux    | ✓ tested  | Tested in CI   |
 
 **Architectures:** x86_64, aarch64
+
 
 ---
 

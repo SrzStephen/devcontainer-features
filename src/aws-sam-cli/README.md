@@ -11,12 +11,14 @@ Installs the AWS Serverless Application Model (SAM) CLI for building, testing, a
 }
 ```
 
+
+
 ## Compatibility
 
-| OS              | Supported | Notes                                                        |
-| --------------- | --------- | ------------------------------------------------------------ |
-| Debian / Ubuntu | ✓ tested  | Primary target                                               |
-| Alpine Linux    | ✗ no      | Official installer requires glibc; musl not supported        |
+| OS              | Supported | Notes                                          |
+| --------------- | --------- | ---------------------------------------------- |
+| Debian / Ubuntu | ✓ tested  | Primary target                                 |
+| Alpine Linux    | ✗ no      | Official installer requires glibc; musl not supported |
 
 **Architectures:** x86_64, aarch64
 
