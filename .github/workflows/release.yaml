@@ -37,7 +37,7 @@ jobs:
               cp -r "src/$feature" "/tmp/publish-src/$feature"
             fi
           done
-          count=$(ls /tmp/publish-src | wc -l)
+          count=$(find /tmp/publish-src -mindepth 1 -maxdepth 1 -type d | wc -l)
           echo "count=$count" >> "$GITHUB_OUTPUT"
       - name: "Publish Features"
         if: steps.detect.outputs.count != '0'
@@ -51,6 +51,7 @@ jobs:
       - name: Copy generated docs to workspace
         if: steps.detect.outputs.count != '0'
         run: |
+          set -e
           for dir in /tmp/publish-src/*/; do
             feature=$(basename "$dir")
             if [[ -f "/tmp/publish-src/$feature/README.md" ]]; then
