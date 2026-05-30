@@ -62,7 +62,7 @@ jobs:
           fetch-depth: 0
       - id: compute
         run: |
-          ALL='["claude-code","just","kiro-cli","nvidia-container-toolkit","act","gitlab-ci-local","prek"]'
+          ALL='["bash-language-server","claude-code","just","kiro-cli","nvidia-container-toolkit","act","gitlab-ci-local","prek"]'
 
           if [[ "${{ github.event_name }}" != "pull_request" ]]; then
             echo "features=$ALL" >> $GITHUB_OUTPUT
@@ -71,7 +71,7 @@ jobs:
 
           CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
           FEATURES=()
-          for f in claude-code just kiro-cli nvidia-container-toolkit act gitlab-ci-local prek; do
+          for f in bash-language-server claude-code just kiro-cli nvidia-container-toolkit act gitlab-ci-local prek; do
             if echo "$CHANGED" | grep -qE "^(src|test)/$f/"; then
               FEATURES+=("\"$f\"")
             fi
@@ -92,8 +92,6 @@ jobs:
         feature: ${{ fromJson(needs.detect-changes.outputs.features) }}
         base-image: [debian:bookworm, alpine:3.20]
         exclude:
-          - feature: kiro-cli
-            base-image: alpine:3.20
           - feature: nvidia-container-toolkit
             base-image: alpine:3.20
     steps:
@@ -112,8 +110,6 @@ jobs:
         feature: ${{ fromJson(needs.detect-changes.outputs.features) }}
         base-image: [debian:bookworm, alpine:3.20]
         exclude:
-          - feature: kiro-cli
-            base-image: alpine:3.20
           - feature: nvidia-container-toolkit
             base-image: alpine:3.20
     steps:
