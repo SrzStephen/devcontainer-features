@@ -26,10 +26,11 @@ jobs:
         run: |
           set -e
           mkdir -p /tmp/publish-src
+          repo=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           for dir in src/*/; do
             feature=$(basename "$dir")
             version=$(jq -r '.version' "src/$feature/devcontainer-feature.json")
-            ref="ghcr.io/${{ github.repository }}/$feature:$version"
+            ref="ghcr.io/$repo/$feature:$version"
             if docker manifest inspect "$ref" > /dev/null 2>&1; then
               echo "Skipping $feature@$version (already published)"
             else
