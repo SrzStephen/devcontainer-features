@@ -1,0 +1,10 @@
+{
+  "id": "agentcore",
+  "version": "0.1.0",
+  "name": "AWS AgentCore CLI",
+  "description": "Installs the AWS Bedrock AgentCore CLI (@aws/agentcore) for building and deploying AI agents to Amazon Bedrock AgentCore Runtime.",
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils",
+    "ghcr.io/devcontainers/features/node"
+  ]
+}
