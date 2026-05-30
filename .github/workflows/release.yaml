@@ -40,10 +40,11 @@ jobs:
           count=$(ls /tmp/publish-src | wc -l)
           echo "count=$count" >> "$GITHUB_OUTPUT"
       - name: "Publish Features"
+        if: steps.detect.outputs.count != '0'
         uses: devcontainers/action@v1
         with:
           publish-features: "true"
-          base-path-to-features: "./src"
+          base-path-to-features: "/tmp/publish-src"
           generate-docs: "true"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
