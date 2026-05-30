@@ -19,6 +19,39 @@ jobs:
       - name: Check formatting
         run: prettier --check "**/*.{json,yaml,yml,md}"
 
+  version-bump-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Ensure changed features bumped their version
+        run: |
+          set -e
+          base="origin/${{ github.base_ref }}"
+          fail=0
+          for dir in src/*/; do
+            feature=$(basename "$dir")
+            json="src/$feature/devcontainer-feature.json"
+            [ -f "$json" ] || continue
+
+            # Any publishable file (not README, not tests) changed versus the base branch?
+            changed=$(git diff --name-only "$base"...HEAD -- "src/$feature/" ":(exclude)src/$feature/README.md" ":(exclude)src/$feature/test/")
+            [ -n "$changed" ] || continue
+
+            # Brand-new feature (no metadata on base) needs no bump.
+            git cat-file -e "$base:$json" 2>/dev/null || continue
+
+            old=$(git show "$base:$json" | jq -r '.version')
+            new=$(jq -r '.version' "$json")
+            if [ "$old" = "$new" ]; then
+              echo "::error file=$json::Feature '$feature' changed but version was not bumped (still $new). Bump it in $json."
+              fail=1
+            fi
+          done
+          exit $fail
+
   detect-changes:
     runs-on: ubuntu-latest
     outputs:

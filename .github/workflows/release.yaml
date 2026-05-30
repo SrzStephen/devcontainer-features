@@ -15,57 +15,6 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: "Bump versions for changed features"
-        run: |
-          set -e
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-
-          changed_files=()
-
-          for feature_dir in src/*/; do
-            feature=$(basename "$feature_dir")
-            json="src/$feature/devcontainer-feature.json"
-            [ -f "$json" ] || continue
-
-            latest_tag=$(git tag --list "feature_${feature}_*" --sort=-version:refname | head -1)
-
-            if [ -z "$latest_tag" ]; then
-              changed=true
-            else
-              diff_output=$(git diff --name-only "$latest_tag" HEAD -- "src/$feature/" ":(exclude)src/$feature/README.md")
-              [ -n "$diff_output" ] && changed=true || changed=false
-            fi
-
-            if [ "$changed" = "true" ]; then
-              current=$(jq -r '.version' "$json")
-              if ! echo "$current" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-                echo "WARNING: $feature has malformed version '$current', skipping"
-                continue
-              fi
-              IFS='.' read -r major minor patch <<< "$current"
-              new_version="$major.$minor.$((patch + 1))"
-              tmp=$(mktemp)
-              jq --arg v "$new_version" '.version = $v' "$json" > "$tmp" && mv "$tmp" "$json"
-              echo "Bumped $feature: $current → $new_version"
-              changed_files+=("$json")
-            fi
-          done
-
-          if [ "${#changed_files[@]}" -gt 0 ]; then
-            git add "${changed_files[@]}"
-            git commit -m "chore: bump versions for changed features [skip ci]"
-            git fetch origin main
-            git merge-base --is-ancestor origin/main HEAD || {
-              echo "ERROR: HEAD is not ahead of origin/main — refusing to push"
-              exit 1
-            }
-            git push origin HEAD:main
-          else
-            echo "No features changed — skipping version bump commit"
-          fi
       - name: "Publish Features"
         uses: devcontainers/action@v1
         with:
@@ -79,15 +28,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          git config --global user.email github-actions[bot]@users.noreply.github.com
-          git config --global user.name github-actions[bot]
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
           git config pull.rebase false
-          branch=automated-documentation-update-$GITHUB_RUN_ID
-          git checkout -b $branch
-          message='Automated documentation update'
-          git add */**/README.md
-          git commit -m 'Automated documentation update [skip ci]' || export NO_UPDATES=true
-          if [ "$NO_UPDATES" != "true" ] ; then
-              git push origin "$branch"
-              gh pr create --title "$message" --body "$message"
-          fi
+          branch="automated-documentation-update-$GITHUB_RUN_ID"
+          git checkout -b "$branch"
+          git add '*/**/README.md'
+          git commit -m 'Automated documentation update [skip ci]' || exit 0
+          git push origin "$branch"
+          gh pr create --title 'Automated documentation update' --body 'Automated documentation update'
