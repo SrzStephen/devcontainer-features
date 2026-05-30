@@ -48,6 +48,15 @@ jobs:
           generate-docs: "true"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy generated docs to workspace
+        if: steps.detect.outputs.count != '0'
+        run: |
+          for dir in /tmp/publish-src/*/; do
+            feature=$(basename "$dir")
+            if [[ -f "/tmp/publish-src/$feature/README.md" ]]; then
+              cp "/tmp/publish-src/$feature/README.md" "src/$feature/README.md"
+            fi
+          done
       - name: Create PR for Documentation
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
