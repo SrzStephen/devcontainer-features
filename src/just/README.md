@@ -30,4 +30,4 @@ Installs just, a handy way to save and run project-specific commands via justfil
 
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/just/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
