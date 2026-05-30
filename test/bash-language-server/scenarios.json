@@ -1,0 +1,24 @@
+{
+  "non-root-user": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "bash-language-server": {}
+    }
+  },
+  "no-shellcheck": {
+    "image": "debian:bookworm",
+    "features": {
+      "bash-language-server": {
+        "installShellcheck": false
+      }
+    }
+  },
+  "pinned-version": {
+    "image": "debian:bookworm",
+    "features": {
+      "bash-language-server": {
+        "version": "4.10.1"
+      }
+    }
+  }
+}
