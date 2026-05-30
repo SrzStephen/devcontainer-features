@@ -9,6 +9,7 @@ set -euo pipefail
 
 VERSION="${VERSION:-"latest"}"
 INSTALL_SHELLCHECK="${INSTALLSHELLCHECK:-"true"}"
+INSTALL_SHELLFMT="${INSTALLSHELLFMT:-"true"}"
 
 if [ "$(id -u)" -ne 0 ]; then
     echo 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
@@ -71,6 +72,26 @@ if [ "${INSTALL_SHELLCHECK}" = "true" ]; then
                 apt-get update -y
             fi
             apt-get install -y --no-install-recommends shellcheck
+        fi
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# Optional: install shellfmt (shfmt) binary
+# ---------------------------------------------------------------------------
+
+if [ "${INSTALL_SHELLFMT}" = "true" ]; then
+    if command -v shfmt &>/dev/null; then
+        echo "shfmt already installed at $(command -v shfmt), skipping."
+    else
+        echo "Installing shfmt..."
+        if command -v apk &>/dev/null; then
+            apk add --no-cache shfmt
+        else
+            if [ "$(find /var/lib/apt/lists/* 2>/dev/null | wc -l)" = "0" ]; then
+                apt-get update -y
+            fi
+            apt-get install -y --no-install-recommends shfmt
         fi
     fi
 fi

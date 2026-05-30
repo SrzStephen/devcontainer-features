@@ -2,7 +2,7 @@
   "id": "bash-language-server",
   "version": "0.1.0",
   "name": "bash Language Server",
-  "description": "Installs bash-language-server via npm. Optionally installs shellcheck if not already present.",
+  "description": "Installs bash-language-server via npm. Optionally installs shellcheck and shfmt if not already present.",
   "options": {
     "version": {
       "type": "string",
@@ -14,6 +14,11 @@
       "type": "boolean",
       "default": true,
       "description": "When true, installs shellcheck via the system package manager if shellcheck is not already on PATH."
+    },
+    "installShellfmt": {
+      "type": "boolean",
+      "default": true,
+      "description": "When true, installs shfmt via the system package manager if shfmt is not already on PATH."
     }
   },
   "installsAfter": [
@@ -21,6 +26,7 @@
     "ghcr.io/devcontainers/features/node",
     "ghcr.io/lukewiwa/features/shellcheck:0",
     "ghcr.io/marcozac/devcontainer-features/shellcheck:1",
-    "ghcr.io/devcontainers-extra/features/shellcheck:1"
+    "ghcr.io/devcontainers-extra/features/shellcheck:1",
+    "ghcr.io/devcontainers-extra/features/shfmt:1"
   ]
 }
