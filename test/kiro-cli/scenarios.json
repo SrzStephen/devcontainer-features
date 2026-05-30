@@ -10,5 +10,17 @@
     "features": {
       "kiro-cli": { "version": "2.3.0" }
     }
+  },
+  "disable-autoupdates": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "kiro-cli": { "disableAutoupdates": true }
+    }
+  },
+  "alpine": {
+    "image": "alpine:3.20",
+    "features": {
+      "kiro-cli": {}
+    }
   }
 }
