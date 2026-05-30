@@ -24,6 +24,7 @@ jobs:
       - name: Detect features to publish
         id: detect
         run: |
+          set -e
           mkdir -p /tmp/publish-src
           for dir in src/*/; do
             feature=$(basename "$dir")
@@ -37,7 +38,7 @@ jobs:
             fi
           done
           count=$(ls /tmp/publish-src | wc -l)
-          echo "count=$count" >> $GITHUB_OUTPUT
+          echo "count=$count" >> "$GITHUB_OUTPUT"
       - name: "Publish Features"
         uses: devcontainers/action@v1
         with:
