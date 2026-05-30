@@ -21,6 +21,23 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Detect features to publish
+        id: detect
+        run: |
+          mkdir -p /tmp/publish-src
+          for dir in src/*/; do
+            feature=$(basename "$dir")
+            version=$(jq -r '.version' "src/$feature/devcontainer-feature.json")
+            ref="ghcr.io/${{ github.repository }}/$feature:$version"
+            if docker manifest inspect "$ref" > /dev/null 2>&1; then
+              echo "Skipping $feature@$version (already published)"
+            else
+              echo "Queuing $feature@$version for publish"
+              cp -r "src/$feature" "/tmp/publish-src/$feature"
+            fi
+          done
+          count=$(ls /tmp/publish-src | wc -l)
+          echo "count=$count" >> $GITHUB_OUTPUT
       - name: "Publish Features"
         uses: devcontainers/action@v1
         with:
