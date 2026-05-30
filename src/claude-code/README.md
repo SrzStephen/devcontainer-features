@@ -15,8 +15,8 @@ Installs Claude Code CLI and optionally configures plugin marketplaces, plugins,
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| marketplace | Plugin marketplace to register. Accepts owner/repo shorthand (e.g. obra/superpowers-marketplace) or a full GitHub URL (e.g. https://github.com/obra/superpowers-marketplace). Skipped when empty. | string | - |
-| plugin | Plugin to install after the marketplace is configured. Accepts plugin-name@marketplace-name format (e.g. superpowers@superpowers-marketplace) or a full GitHub URL. Skipped when empty. | string | - |
+| marketplace | Comma-separated list of plugin marketplaces to register. Each entry accepts owner/repo shorthand (e.g. obra/superpowers-marketplace) or a full GitHub URL (e.g. https://github.com/obra/superpowers-marketplace). Skipped when empty. | string | - |
+| plugin | Comma-separated list of plugins to install after marketplaces are configured. Each entry accepts plugin-name@marketplace-name format (e.g. superpowers@superpowers-marketplace) or a full GitHub URL. Skipped when empty. | string | - |
 | removeAttribution | When true, injects empty commit and pr attribution strings into ~/.claude/settings.json, suppressing Co-Authored-By lines from Claude Code commits. | boolean | false |
 | statusline | When true, installs statusline.sh to ~/.claude/statusline-command.sh and configures it as the Claude Code status line in ~/.claude/settings.json. | boolean | false |
 
@@ -35,20 +35,20 @@ The Claude Code status line runs the script `~/.claude/statusline.sh` on each as
 
 ### What it shows
 
-| Segment      | Example                               | Description                                                        |
-| ------------ | ------------------------------------- | ------------------------------------------------------------------ |
-| 🤖 Model     | `🤖 sonnet-4.6 High`                  | Current model name and thinking level (omitted when none/not set)  |
-| 📁 Directory | `📁 devcontainer-features`            | Current working directory (basename only)                          |
-| 🌿 Branch    | `🌿 main`                             | Git branch (omitted outside a git repo)                            |
-| 🔗 Repo      | `🔗 SrzStephen/devcontainer-features` | Clickable OSC 8 hyperlink to remote (Cmd/Ctrl+click)               |
-| ctx          | `ctx: 15k/200k (8%)`                  | Context window: tokens used / max size / percentage                |
-| 5h           | `5h: 24% (resets in 1h 45m)`          | 5-hour rate limit usage and time until reset (Pro/Max only)        |
-| 7d           | `7d: 41% (resets in 3d 5h)`           | 7-day rate limit usage and time until reset (Pro/Max only)         |
+| Segment      | Example                               | Description                                                 |
+| ------------ | ------------------------------------- | ----------------------------------------------------------- |
+| 🤖 Model     | `🤖 Sonnet`                           | Current model name                                          |
+| 📁 Directory | `📁 devcontainer-features`            | Current working directory (basename only)                   |
+| 🌿 Branch    | `🌿 main`                             | Git branch (omitted outside a git repo)                     |
+| 🔗 Repo      | `🔗 SrzStephen/devcontainer-features` | Clickable OSC 8 hyperlink to remote (Cmd/Ctrl+click)        |
+| ctx          | `ctx: 15k/200k (8%)`                  | Context window: tokens used / max size / percentage         |
+| 5h           | `5h: 24% (resets in 1h 45m)`          | 5-hour rate limit usage and time until reset (Pro/Max only) |
+| 7d           | `7d: 41% (resets in 3d 5h)`           | 7-day rate limit usage and time until reset (Pro/Max only)  |
 
 ### Example output
 
 ```
-🤖 sonnet-4.6 High | 📁 devcontainer-features | 🌿 main | 🔗 SrzStephen/devcontainer-features | ctx: 15k/200k (8%) | 5h: 24% (resets in 1h 45m) | 7d: 41% (resets in 3d 5h)
+🤖 Sonnet | 📁 devcontainer-features | 🌿 main | 🔗 SrzStephen/devcontainer-features | ctx: 15k/200k (8%) | 5h: 24% (resets in 1h 45m) | 7d: 41% (resets in 3d 5h)
 ```
 
 The `🔗` segment is a clickable hyperlink in terminals that support OSC 8 (iTerm2, Kitty, WezTerm). It opens the GitHub repository in your browser. If your terminal doesn't support hyperlinks, set `FORCE_HYPERLINK=1` before launching Claude Code.
@@ -75,4 +75,4 @@ https://code.claude.com/docs/en/statusline
 
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/claude-code/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json).  Add additional notes to a `NOTES.md`._

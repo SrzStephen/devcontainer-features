@@ -109,7 +109,7 @@ test-prek-arm64:
     just _run-arm64 prek {{ALPINE}}
 
 generate-docs:
-	npx --yes @devcontainers/cli@latest features generate-docs -p . -n {{REPO}}
+	devcontainer features generate-docs -p src -n {{REPO}}
 
 ACT_OPTS := '--container-options "-v /tmp:/tmp" --concurrent-jobs 4'
 
