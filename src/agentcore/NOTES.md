@@ -3,7 +3,7 @@
 | OS              | Supported   | Notes                          |
 | --------------- | ----------- | ------------------------------ |
 | Debian / Ubuntu | ✓ tested    | Primary target                 |
-| Alpine Linux    | ✓ supported | Not tested in CI               |
+| Alpine Linux    | ✓ tested    | Tested in CI                   |
 
 **Architectures:** x86_64, aarch64
 
