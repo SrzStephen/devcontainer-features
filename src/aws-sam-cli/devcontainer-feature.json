@@ -3,5 +3,15 @@
   "version": "0.1.0",
   "name": "AWS SAM CLI",
   "description": "Installs the AWS Serverless Application Model (SAM) CLI for building, testing, and deploying serverless applications.",
-  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
+  "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/aws-sam-cli/README.md",
+  "keywords": [
+    "aws",
+    "sam",
+    "serverless",
+    "lambda",
+    "cloudformation"
+  ],
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
 }
