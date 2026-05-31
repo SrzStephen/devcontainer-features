@@ -1,6 +1,6 @@
 {
   "id": "gitlab-ci-local",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "name": "gitlab-ci-local",
   "description": "Installs gitlab-ci-local, a tool to run GitLab CI pipelines locally.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/gitlab-ci-local/README.md",

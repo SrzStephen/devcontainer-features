@@ -1,6 +1,6 @@
 {
   "id": "prek",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "name": "prek",
   "description": "Installs prek, a pre-commit and pre-push hook runner.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/prek/README.md",

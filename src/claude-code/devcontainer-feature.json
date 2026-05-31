@@ -1,6 +1,6 @@
 {
   "id": "claude-code",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "name": "Claude Code",
   "description": "Installs Claude Code CLI and optionally configures plugin marketplaces, plugins, attribution settings and custom statusline.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/claude-code/README.md",

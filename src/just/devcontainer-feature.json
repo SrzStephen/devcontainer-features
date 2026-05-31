@@ -1,6 +1,6 @@
 {
   "id": "just",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "name": "just",
   "description": "Installs just, a handy way to save and run project-specific commands via justfile.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/just/README.md",
