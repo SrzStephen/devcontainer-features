@@ -49,6 +49,68 @@ jobs:
           generate-docs: "true"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install ORAS
+        if: steps.detect.outputs.count != '0'
+        uses: oras-project/setup-oras@v1
+      - name: Annotate published features with OCI metadata
+        if: steps.detect.outputs.count != '0'
+        run: |
+          set -e
+          repo=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
+          for dir in /tmp/publish-src/*/; do
+            feature=$(basename "$dir")
+            json="/tmp/publish-src/$feature/devcontainer-feature.json"
+
+            description=$(jq -r '.description // ""' "$json")
+            title=$(jq -r '.name // ""' "$json")
+            version=$(jq -r '.version' "$json")
+            doc_url=$(jq -r '.documentationURL // ""' "$json")
+            major=$(echo "$version" | cut -d. -f1)
+            minor=$(echo "$version" | cut -d. -f2)
+
+            version_ref="ghcr.io/$repo/$feature:$version"
+
+            # Fetch the exact-version manifest and record its digest
+            oras manifest fetch "$version_ref" > "/tmp/manifest-${feature}.json"
+            version_config_digest=$(jq -r '.config.digest' "/tmp/manifest-${feature}.json")
+            media_type=$(jq -r '.mediaType // "application/vnd.oci.image.manifest.v1+json"' "/tmp/manifest-${feature}.json")
+
+            # Build annotated manifest
+            jq \
+              --arg desc "$description" \
+              --arg title "$title" \
+              --arg ver "$version" \
+              --arg doc "$doc_url" \
+              --arg src "https://github.com/$repo" \
+              --arg rev "$GITHUB_SHA" \
+              '.annotations = (.annotations // {}) + {
+                "org.opencontainers.image.description": $desc,
+                "org.opencontainers.image.title": $title,
+                "org.opencontainers.image.version": $ver,
+                "org.opencontainers.image.documentation": $doc,
+                "org.opencontainers.image.source": $src,
+                "org.opencontainers.image.revision": $rev
+              }' "/tmp/manifest-${feature}.json" > "/tmp/annotated-${feature}.json"
+
+            # Annotate every tag that currently points to the same digest
+            for tag in "$version" "${major}.${minor}" "$major" "latest"; do
+              tag_ref="ghcr.io/$repo/$feature:$tag"
+              safe_tag=$(echo "$tag" | tr './' '__')
+
+              if oras manifest fetch "$tag_ref" > "/tmp/check-${feature}-${safe_tag}.json" 2>/dev/null; then
+                tag_config_digest=$(jq -r '.config.digest' "/tmp/check-${feature}-${safe_tag}.json")
+                if [ "$tag_config_digest" = "$version_config_digest" ]; then
+                  oras manifest push "$tag_ref" "/tmp/annotated-${feature}.json:${media_type}"
+                  echo "Annotated $tag_ref"
+                else
+                  echo "Skipping $tag_ref (points to a different version)"
+                fi
+              else
+                echo "Skipping $tag_ref (tag not found)"
+              fi
+            done
+          done
       - name: Copy generated docs to workspace
         if: steps.detect.outputs.count != '0'
         run: |
@@ -59,17 +121,3 @@ jobs:
               cp "/tmp/publish-src/$feature/README.md" "src/$feature/README.md"
             fi
           done
-      - name: Create PR for Documentation
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git config pull.rebase false
-          branch="automated-documentation-update-$GITHUB_RUN_ID"
-          git checkout -b "$branch"
-          git add '*/**/README.md'
-          git commit -m 'Automated documentation update [skip ci]' || exit 0
-          git push origin "$branch"
-          gh pr create --title 'Automated documentation update' --body 'Automated documentation update'

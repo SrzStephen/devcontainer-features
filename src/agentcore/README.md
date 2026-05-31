@@ -18,7 +18,7 @@ Installs the AWS Bedrock AgentCore CLI (@aws/agentcore) for building and deployi
 | OS              | Supported   | Notes                          |
 | --------------- | ----------- | ------------------------------ |
 | Debian / Ubuntu | ✓ tested    | Primary target                 |
-| Alpine Linux    | ✓ supported | Not tested in CI               |
+| Alpine Linux    | ✓ tested    | Tested in CI                   |
 
 **Architectures:** x86_64, aarch64
 
@@ -29,4 +29,4 @@ Node.js 20 or later is required. If not present, the installer bootstraps Node.j
 
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/agentcore/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json).  Add additional notes to a `NOTES.md`._

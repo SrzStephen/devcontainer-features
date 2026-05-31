@@ -1,5 +1,5 @@
 
-# bash Language Server (bash-language-server)
+# Bash Language Server (bash-language-server)
 
 Installs bash-language-server via npm. Optionally installs shellcheck and shfmt if not already present.
 
@@ -16,8 +16,8 @@ Installs bash-language-server via npm. Optionally installs shellcheck and shfmt 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | version | Version of bash-language-server to install. Use 'latest' for the newest available. | string | latest |
-| installShellcheck | When true, installs shellcheck via the system package manager if shellcheck is not already on PATH. | boolean | true |
-| installShellfmt | When true, installs shfmt via the system package manager if shfmt is not already on PATH. | boolean | true |
+| installShellcheck | When true, installs shellcheck via the system package manager if shellcheck is not already on PATH. | boolean | false |
+| installShellfmt | When true, installs shfmt via the system package manager if shfmt is not already on PATH. | boolean | false |
 
 ## Compatibility
 
@@ -31,4 +31,4 @@ Installs bash-language-server via npm. Optionally installs shellcheck and shfmt 
 
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/bash-language-server/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json).  Add additional notes to a `NOTES.md`._

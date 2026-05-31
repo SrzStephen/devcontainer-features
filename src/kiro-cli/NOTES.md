@@ -3,7 +3,7 @@
 | OS              | Supported  | Notes                                                                          |
 | --------------- | ---------- | ------------------------------------------------------------------------------ |
 | Debian / Ubuntu | ✓ tested   | x86_64 uses .deb extraction; arm64 and musl systems use zip                   |
-| Alpine Linux    | ✓ tested   | Uses musl-linked zip (`kirocli-*-linux-musl.zip`); glibc < 2.34 also supported |
+| Alpine Linux    | ✓ supported | Not tested in CI; install script handles musl automatically                    |
 
 **Architectures:** x86_64, aarch64
 

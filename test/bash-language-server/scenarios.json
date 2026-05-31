@@ -1,4 +1,13 @@
 {
+  "with-shellcheck-shfmt": {
+    "image": "debian:bookworm",
+    "features": {
+      "bash-language-server": {
+        "installShellcheck": true,
+        "installShellfmt": true
+      }
+    }
+  },
   "non-root-user": {
     "image": "mcr.microsoft.com/devcontainers/base:debian",
     "features": {
