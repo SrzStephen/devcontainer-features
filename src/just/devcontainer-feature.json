@@ -1,37 +1,23 @@
 {
   "id": "just",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "name": "just",
   "description": "Installs just, a handy way to save and run project-specific commands via justfile.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/just/README.md",
-  "keywords": [
-    "just",
-    "task-runner",
-    "justfile",
-    "make"
-  ],
+  "keywords": ["just", "task-runner", "justfile", "make"],
   "options": {
     "version": {
       "type": "string",
-      "proposals": [
-        "latest",
-        "1"
-      ],
+      "proposals": ["latest", "1"],
       "default": "latest",
       "description": "Version of just to install. Use 'latest' for the newest available."
     },
     "lspVersion": {
       "type": "string",
-      "proposals": [
-        "latest",
-        "false",
-        "0.4.2"
-      ],
+      "proposals": ["latest", "false", "0.4.2"],
       "default": "latest",
       "description": "Version of just-lsp to install. Set to 'false' to skip installation."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }
