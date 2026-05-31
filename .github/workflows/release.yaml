@@ -101,7 +101,7 @@ jobs:
               if oras manifest fetch "$tag_ref" > "/tmp/check-${feature}-${safe_tag}.json" 2>/dev/null; then
                 tag_config_digest=$(jq -r '.config.digest' "/tmp/check-${feature}-${safe_tag}.json")
                 if [ "$tag_config_digest" = "$version_config_digest" ]; then
-                  oras manifest push "$tag_ref" "/tmp/annotated-${feature}.json:${media_type}"
+                  oras manifest push "$tag_ref" "/tmp/annotated-${feature}.json" --media-type "${media_type}"
                   echo "Annotated $tag_ref"
                 else
                   echo "Skipping $tag_ref (points to a different version)"
