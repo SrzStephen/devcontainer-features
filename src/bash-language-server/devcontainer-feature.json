@@ -14,12 +14,12 @@
     },
     "installShellcheck": {
       "type": "boolean",
-      "default": true,
+      "default": false,
       "description": "When true, installs shellcheck via the system package manager if shellcheck is not already on PATH."
     },
     "installShellfmt": {
       "type": "boolean",
-      "default": true,
+      "default": false,
       "description": "When true, installs shfmt via the system package manager if shfmt is not already on PATH."
     }
   },
