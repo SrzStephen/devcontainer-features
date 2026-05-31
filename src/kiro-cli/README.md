@@ -1,5 +1,5 @@
 
-# Kiro cli (kiro-cli)
+# Kiro CLI (kiro-cli)
 
 Installs the Kiro cli.
 
@@ -38,4 +38,4 @@ The installer automatically detects the system's libc:
 
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/kiro-cli/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main//tmp/publish-src/kiro-cli/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._

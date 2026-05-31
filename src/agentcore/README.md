@@ -29,4 +29,4 @@ Node.js 20 or later is required. If not present, the installer bootstraps Node.j
 
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/agentcore/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main//tmp/publish-src/agentcore/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
