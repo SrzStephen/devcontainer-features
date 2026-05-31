@@ -25,4 +25,4 @@ Installs the AWS Serverless Application Model (SAM) CLI for building, testing, a
 
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/SrzStephen/devcontainer-features/blob/main/src/aws-sam-cli/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
