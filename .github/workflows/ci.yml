@@ -62,7 +62,7 @@ jobs:
           fetch-depth: 0
       - id: compute
         run: |
-          ALL='["bash-language-server","claude-code","just","kiro-cli","nvidia-container-toolkit","act","gitlab-ci-local","prek","gitlab-cli","terraform-ls","agentcore","aws-sam-cli"]'
+          ALL='["bash-language-server","claude-code","just","kiro-cli","nvidia-container-toolkit","act","gitlab-ci-local","prek","agentcore","aws-sam-cli"]'
 
           if [[ "${{ github.event_name }}" != "pull_request" ]]; then
             echo "features=$ALL" >> $GITHUB_OUTPUT
@@ -71,7 +71,7 @@ jobs:
 
           CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
           FEATURES=()
-          for f in bash-language-server claude-code just kiro-cli nvidia-container-toolkit act gitlab-ci-local prek gitlab-cli terraform-ls agentcore aws-sam-cli; do
+          for f in bash-language-server claude-code just kiro-cli nvidia-container-toolkit act gitlab-ci-local prek agentcore aws-sam-cli; do
             if echo "$CHANGED" | grep -qE "^(src|test)/$f/"; then
               FEATURES+=("\"$f\"")
             fi
