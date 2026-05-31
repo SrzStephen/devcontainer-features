@@ -4,19 +4,11 @@
   "name": "Bash Language Server",
   "description": "Installs bash-language-server via npm. Optionally installs shellcheck and shfmt if not already present.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/bash-language-server/README.md",
-  "keywords": [
-    "bash",
-    "lsp",
-    "language-server",
-    "shellcheck",
-    "shfmt"
-  ],
+  "keywords": ["bash", "lsp", "language-server", "shellcheck", "shfmt"],
   "options": {
     "version": {
       "type": "string",
-      "proposals": [
-        "latest"
-      ],
+      "proposals": ["latest"],
       "default": "latest",
       "description": "Version of bash-language-server to install. Use 'latest' for the newest available."
     },

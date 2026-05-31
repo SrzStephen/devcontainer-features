@@ -4,24 +4,14 @@
   "name": "prek",
   "description": "Installs prek, a pre-commit and pre-push hook runner.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/prek/README.md",
-  "keywords": [
-    "prek",
-    "pre-commit",
-    "pre-push",
-    "git-hooks"
-  ],
+  "keywords": ["prek", "pre-commit", "pre-push", "git-hooks"],
   "options": {
     "version": {
       "type": "string",
-      "proposals": [
-        "latest",
-        "0"
-      ],
+      "proposals": ["latest", "0"],
       "default": "latest",
       "description": "Version of prek to install. Use 'latest' for the newest available."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }
