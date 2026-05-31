@@ -1,6 +1,6 @@
 {
   "id": "agentcore",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "name": "AWS AgentCore CLI",
   "description": "Installs the AWS Bedrock AgentCore CLI (@aws/agentcore) for building and deploying AI agents to Amazon Bedrock AgentCore Runtime.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/agentcore/README.md",

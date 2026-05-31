@@ -1,6 +1,6 @@
 {
   "id": "act",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "name": "act",
   "description": "Installs act, a tool to run GitHub Actions locally.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/act/README.md",

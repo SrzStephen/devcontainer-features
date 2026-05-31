@@ -1,6 +1,6 @@
 {
   "id": "bash-language-server",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "name": "Bash Language Server",
   "description": "Installs bash-language-server via npm. Optionally installs shellcheck and shfmt if not already present.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/bash-language-server/README.md",

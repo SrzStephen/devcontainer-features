@@ -1,6 +1,6 @@
 {
   "id": "nvidia-container-toolkit",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "name": "NVIDIA Container Toolkit",
   "description": "Installs the NVIDIA Container Toolkit (nvidia-container-toolkit) for GPU-accelerated containers.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/nvidia-container-toolkit/README.md",
