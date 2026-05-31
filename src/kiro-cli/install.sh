@@ -15,7 +15,7 @@ if [ "${VERSION}" != "latest" ] && ! echo "${VERSION}" | grep -qE '^[0-9]+\.[0-9
     exit 1
 fi
 
-BASE_URL="https://desktop-release.q.us-east-1.amazonaws.com/${VERSION}"
+BASE_URL="https://prod.download.cli.kiro.dev/stable/${VERSION}"
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -73,6 +73,8 @@ if command -v dpkg &>/dev/null && [ "${ARCH}" = "x86_64" ] && ! _use_musl; then
     TMP_EXTRACT="$(mktemp -d)"
     dpkg-deb -x "${TMP_DEB}" "${TMP_EXTRACT}"
     install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli" /usr/local/bin/kiro-cli
+    install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli-chat" /usr/local/bin/kiro-cli-chat
+    install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli-term" /usr/local/bin/kiro-cli-term
     rm -rf "${TMP_EXTRACT}" "${TMP_DEB}"
 else
     # Zip-based install for arm64, musl, and non-Debian systems.
@@ -119,6 +121,8 @@ else
     fi
     unzip -q "${TMP_DIR}/kiro.zip" -d "${TMP_DIR}"
     install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli" /usr/local/bin/kiro-cli
+    install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli-chat" /usr/local/bin/kiro-cli-chat
+    install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli-term" /usr/local/bin/kiro-cli-term
     rm -rf "${TMP_DIR}"
 fi
 
