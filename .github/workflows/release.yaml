@@ -121,17 +121,3 @@ jobs:
               cp "/tmp/publish-src/$feature/README.md" "src/$feature/README.md"
             fi
           done
-      - name: Create PR for Documentation
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git config pull.rebase false
-          branch="automated-documentation-update-$GITHUB_RUN_ID"
-          git checkout -b "$branch"
-          git add '*/**/README.md'
-          git commit -m 'Automated documentation update [skip ci]' || exit 0
-          git push origin "$branch"
-          gh pr create --title 'Automated documentation update' --body 'Automated documentation update'
