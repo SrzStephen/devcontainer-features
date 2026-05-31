@@ -50,17 +50,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Install ORAS
-        if: steps.detect.outputs.count != '0'
         uses: oras-project/setup-oras@v1
       - name: Annotate published features with OCI metadata
-        if: steps.detect.outputs.count != '0'
         run: |
           set -e
           repo=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
 
-          for dir in /tmp/publish-src/*/; do
+          for dir in src/*/; do
             feature=$(basename "$dir")
-            json="/tmp/publish-src/$feature/devcontainer-feature.json"
+            json="src/$feature/devcontainer-feature.json"
+            [ -f "$json" ] || continue
 
             description=$(jq -r '.description // ""' "$json")
             title=$(jq -r '.name // ""' "$json")
@@ -71,8 +70,11 @@ jobs:
 
             version_ref="ghcr.io/$repo/$feature:$version"
 
-            # Fetch the exact-version manifest and record its digest
-            oras manifest fetch "$version_ref" > "/tmp/manifest-${feature}.json"
+            # Fetch the exact-version manifest and record its digest; skip if not yet published
+            if ! oras manifest fetch "$version_ref" > "/tmp/manifest-${feature}.json" 2>/dev/null; then
+              echo "Skipping $feature@$version (not yet published)"
+              continue
+            fi
             version_config_digest=$(jq -r '.config.digest' "/tmp/manifest-${feature}.json")
             media_type=$(jq -r '.mediaType // "application/vnd.oci.image.manifest.v1+json"' "/tmp/manifest-${feature}.json")
 
