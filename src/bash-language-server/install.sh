@@ -47,11 +47,16 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Verify
+# Verify and ensure /usr/bin symlink
 # ---------------------------------------------------------------------------
 
 if command -v bash-language-server &>/dev/null; then
     echo "bash-language-server $(bash-language-server --version 2>/dev/null || true) installed."
+    BLS_BIN="$(command -v bash-language-server)"
+    if [ "${BLS_BIN}" != "/usr/bin/bash-language-server" ] && [ ! -e /usr/bin/bash-language-server ]; then
+        ln -s "${BLS_BIN}" /usr/bin/bash-language-server
+        echo "Symlinked ${BLS_BIN} -> /usr/bin/bash-language-server"
+    fi
 else
     echo "Warning: bash-language-server not found on PATH after installation." >&2
 fi

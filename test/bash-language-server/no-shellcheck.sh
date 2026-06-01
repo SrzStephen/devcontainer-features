@@ -3,6 +3,7 @@ set -e
 source dev-container-features-test-lib
 
 check "bash-language-server is on PATH" which bash-language-server
+check "bash-language-server is present at /usr/bin/bash-language-server" test -x /usr/bin/bash-language-server
 check "bash-language-server --version exits 0" bash-language-server --version
 check "shellcheck is NOT on PATH" bash -c "! command -v shellcheck"
 
