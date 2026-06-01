@@ -28,6 +28,38 @@ if ! command -v curl &>/dev/null && ! command -v wget &>/dev/null; then
     apt-get install -y --no-install-recommends curl ca-certificates
 fi
 
+# Download a URL to a destination (curl or wget) with up to 3 retries.
+fetch() {
+    local url="$1" dest="$2" attempt
+    for attempt in 1 2 3; do
+        if command -v curl &>/dev/null; then
+            curl -fsSL "${url}" -o "${dest}" && return 0
+        else
+            wget -qO "${dest}" "${url}" && return 0
+        fi
+        if [ "${attempt}" -lt 3 ]; then
+            echo "Download attempt ${attempt} failed, retrying in 5s..." >&2
+            sleep 5
+        fi
+    done
+    echo "ERROR: Failed to download ${url} after 3 attempts" >&2
+    return 1
+}
+
+# Verify a file against a sidecar .sha256 file containing a bare hash.
+verify_sha256_bare() {
+    local file="$1" sumfile="$2" expected actual
+    expected="$(tr -d '[:space:]' < "${sumfile}")"
+    actual="$(sha256sum "${file}" | cut -d' ' -f1)"
+    if [ "${actual}" != "${expected}" ]; then
+        echo "ERROR: checksum mismatch for $(basename "${file}")" >&2
+        echo "  expected: ${expected}" >&2
+        echo "  actual:   ${actual}" >&2
+        return 1
+    fi
+    echo "Verified checksum for $(basename "${file}")."
+}
+
 # ---------------------------------------------------------------------------
 # Libc detection
 # ---------------------------------------------------------------------------
@@ -65,11 +97,9 @@ ARCH="$(uname -m)"
 if command -v dpkg &>/dev/null && [ "${ARCH}" = "x86_64" ] && ! _use_musl; then
     echo "Installing Kiro via .deb package..."
     TMP_DEB="$(mktemp --suffix=.deb)"
-    if command -v curl &>/dev/null; then
-        curl -fsSL "${BASE_URL}/kiro-cli.deb" -o "${TMP_DEB}"
-    else
-        wget -qO "${TMP_DEB}" "${BASE_URL}/kiro-cli.deb"
-    fi
+    fetch "${BASE_URL}/kiro-cli.deb" "${TMP_DEB}"
+    fetch "${BASE_URL}/kiro-cli.deb.sha256" "${TMP_DEB}.sha256"
+    verify_sha256_bare "${TMP_DEB}" "${TMP_DEB}.sha256"
     TMP_EXTRACT="$(mktemp -d)"
     dpkg-deb -x "${TMP_DEB}" "${TMP_EXTRACT}"
     install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli" /usr/local/bin/kiro-cli
@@ -114,11 +144,9 @@ else
 
     echo "Installing Kiro via zip archive (${ZIP})..."
     TMP_DIR="$(mktemp -d)"
-    if command -v curl &>/dev/null; then
-        curl -fsSL "${BASE_URL}/${ZIP}" -o "${TMP_DIR}/kiro.zip"
-    else
-        wget -qO "${TMP_DIR}/kiro.zip" "${BASE_URL}/${ZIP}"
-    fi
+    fetch "${BASE_URL}/${ZIP}" "${TMP_DIR}/kiro.zip"
+    fetch "${BASE_URL}/${ZIP}.sha256" "${TMP_DIR}/kiro.zip.sha256"
+    verify_sha256_bare "${TMP_DIR}/kiro.zip" "${TMP_DIR}/kiro.zip.sha256"
     unzip -q "${TMP_DIR}/kiro.zip" -d "${TMP_DIR}"
     install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli" /usr/local/bin/kiro-cli
     install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli-chat" /usr/local/bin/kiro-cli-chat
@@ -126,7 +154,9 @@ else
     rm -rf "${TMP_DIR}"
 fi
 
-rm -rf /var/lib/apt/lists/*
+if command -v apt-get &>/dev/null; then
+    rm -rf /var/lib/apt/lists/*
+fi
 
 # ---------------------------------------------------------------------------
 # Autoupdate settings

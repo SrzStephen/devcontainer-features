@@ -1,5 +1,5 @@
 
-# Bash Language Server (bash-language-server)
+# Bash Language Server (optional shellcheck and shfmt) (bash-language-server)
 
 Installs bash-language-server via npm. Optionally installs shellcheck and shfmt if not already present.
 

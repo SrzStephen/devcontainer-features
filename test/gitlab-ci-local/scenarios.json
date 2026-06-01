@@ -7,11 +7,11 @@
       }
     }
   },
-  "partial-version": {
+  "pinned-version": {
     "image": "debian:bookworm",
     "features": {
       "gitlab-ci-local": {
-        "version": "4"
+        "version": "4.72.0"
       }
     }
   },

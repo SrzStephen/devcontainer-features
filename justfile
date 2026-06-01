@@ -158,6 +158,18 @@ test-aws-sam-cli-arm64:
 generate-docs:
 	devcontainer features generate-docs -p src -n {{REPO}}
 
+patch-bump:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    find src -name "devcontainer-feature.json" | while read -r file; do
+        version=$(jq -r '.version' "$file")
+        IFS='.' read -r major minor patch <<< "$version"
+        new_version="${major}.${minor}.$((patch + 1))"
+        jq --arg v "$new_version" '.version = $v' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+        echo "Bumped $file: $version → $new_version"
+    done
+    just generate-docs
+
 ACT_OPTS := '--container-options "-v /tmp:/tmp" --concurrent-jobs 4'
 
 act-ci:

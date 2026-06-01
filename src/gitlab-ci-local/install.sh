@@ -14,32 +14,37 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# Resolve "latest", "4", or "4.72" to a full version; pass through "4.72.0".
+# Resolve a version. "latest" is resolved via the github.com releases/latest
+# redirect (no GitHub API); any other value is treated as an exact version and
+# passed through unchanged. Partial versions are not supported.
 resolve_version() {
-    local repo="$1" version="$2" tmp dot_count result
+    local repo="$1" version="$2" result
     if [ "${version}" = "latest" ]; then
         result="$(curl -fsSL "https://github.com/${repo}/releases/latest" \
             -o /dev/null -w '%{url_effective}' | sed 's|.*/||; s/^v//' || true)"
     else
-        dot_count="$(printf '%s' "${version}" | tr -cd '.' | wc -c)"
-        if [ "${dot_count}" -lt 2 ]; then
-            tmp="$(mktemp)"
-            local -a curl_opts=(-fsSL)
-            if [ -n "${GITHUB_TOKEN:-}" ]; then
-                curl_opts+=(-H "Authorization: token ${GITHUB_TOKEN}")
-            fi
-            curl "${curl_opts[@]}" "https://api.github.com/repos/${repo}/releases?per_page=100" -o "${tmp}"
-            result="$(grep '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//' | grep -m1 "^${version//./\\.}\\." || true)"
-            rm -f "${tmp}"
-        else
-            result="${version}"
-        fi
+        result="${version}"
     fi
     if [ -z "${result}" ]; then
         echo "ERROR: Failed to resolve version for ${repo}" >&2
         return 1
     fi
     echo "${result}"
+}
+
+# Download a URL to a destination with up to 3 retries.
+download() {
+    local url="$1" dest="$2" attempt
+    for attempt in 1 2 3; do
+        if curl -fsSL "${url}" -o "${dest}"; then
+            return 0
+        elif [ "${attempt}" -lt 3 ]; then
+            echo "Download attempt ${attempt} failed, retrying in 5s..." >&2
+            sleep 5
+        fi
+    done
+    echo "ERROR: Failed to download ${url} after 3 attempts" >&2
+    return 1
 }
 
 export DEBIAN_FRONTEND=noninteractive
@@ -80,26 +85,20 @@ else
             ;;
     esac
     echo "Downloading gitlab-ci-local ${GCL_VERSION}..."
+    # Upstream does not publish a checksums file for these release assets, so no
+    # integrity verification is possible here beyond HTTPS transport.
     tmp="$(mktemp -d)"
+    trap 'rm -rf "${tmp}"' EXIT
     archive="${tmp}/gitlab-ci-local.tar.gz"
     gcl_url="https://github.com/firecow/gitlab-ci-local/releases/download/${GCL_VERSION}/gitlab-ci-local-linux-${ARCH}.tar.gz"
-    for attempt in 1 2 3; do
-        if curl -fsSL "${gcl_url}" -o "${archive}"; then
-            break
-        elif [ "${attempt}" -lt 3 ]; then
-            echo "Download attempt ${attempt} failed, retrying in 5s..."
-            sleep 5
-        else
-            echo "ERROR: Failed to download gitlab-ci-local after 3 attempts"
-            exit 1
-        fi
-    done
+    download "${gcl_url}" "${archive}"
     tar xzf "${archive}" -C "${tmp}"
     mv "${tmp}/gitlab-ci-local" /usr/local/bin/gitlab-ci-local
-    rm -rf "${tmp}"
 fi
 
-rm -rf /var/lib/apt/lists/*
+if command -v apt-get &>/dev/null; then
+    rm -rf /var/lib/apt/lists/*
+fi
 
 echo "gitlab-ci-local ${GCL_VERSION} installed."
 echo "Done!"

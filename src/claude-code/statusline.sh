@@ -96,7 +96,7 @@ if [ -n "$repo_host" ] && [ -n "$repo_owner" ] && [ -n "$repo_name_j" ]; then
   repo_url="https://${repo_host}/${repo_owner}/${repo_name_j}"
   repo_display="${repo_owner}/${repo_name_j}"
 else
-  remote_raw=$(git remote get-url origin 2>/dev/null)
+  remote_raw=$(git -C "$cwd" remote get-url origin 2>/dev/null)
   if [ -n "$remote_raw" ]; then
     repo_url=$(printf '%s' "$remote_raw" \
       | sed 's/git@github\.com:/https:\/\/github.com\//' \

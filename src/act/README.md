@@ -15,7 +15,7 @@ Installs act, a tool to run GitHub Actions locally.
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| version | Version of act to install. Use 'latest' for the newest available. | string | latest |
+| version | Version of act to install. Use 'latest' or an exact version like '0.2.89' (partial versions are not supported). | string | latest |
 
 ## Compatibility
 

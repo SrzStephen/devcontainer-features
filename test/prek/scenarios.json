@@ -7,11 +7,11 @@
       }
     }
   },
-  "partial-version": {
+  "pinned-version": {
     "image": "debian:bookworm",
     "features": {
       "prek": {
-        "version": "0"
+        "version": "0.4.3"
       }
     }
   },

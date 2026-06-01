@@ -42,6 +42,17 @@ normalize_gh_ref() {
     esac
 }
 
+# Reject refs containing shell metacharacters before they are interpolated into
+# the command string passed to su/runuser, preventing command injection from
+# untrusted option values.
+validate_ref() {
+    local ref="$1"
+    if ! printf '%s' "$ref" | grep -qE '^[A-Za-z0-9._/:@~+-]+$'; then
+        echo "ERROR: refusing unsafe reference (only A-Za-z0-9 . _ / : @ ~ + - are allowed): ${ref}" >&2
+        return 1
+    fi
+}
+
 # ---------------------------------------------------------------------------
 # Dependencies
 # ---------------------------------------------------------------------------
@@ -52,7 +63,9 @@ _install_pkg() {
     if command -v apk &>/dev/null; then
         apk add --no-cache "$@"
     else
-        apt-get update -y
+        if [ "$(find /var/lib/apt/lists/* 2>/dev/null | wc -l)" = "0" ]; then
+            apt-get update -y
+        fi
         apt-get install -y --no-install-recommends "$@"
     fi
 }
@@ -186,6 +199,7 @@ if [ -n "${MARKETPLACE}" ]; then
         _m="$(echo "$_m" | xargs)"
         [ -z "$_m" ] && continue
         _m_ref=$(normalize_gh_ref "$_m")
+        validate_ref "$_m_ref"
         echo "Adding plugin marketplace: ${_m_ref}"
         run_as_user "${CLAUDE_BIN} plugin marketplace add ${_m_ref}"
     done
@@ -201,11 +215,14 @@ if [ -n "${PLUGIN}" ]; then
         _p="$(echo "$_p" | xargs)"
         [ -z "$_p" ] && continue
         _p_ref=$(normalize_gh_ref "$_p")
+        validate_ref "$_p_ref"
         echo "Installing plugin: ${_p_ref}"
         run_as_user "${CLAUDE_BIN} plugin install ${_p_ref}"
     done
 fi
 
-rm -rf /var/lib/apt/lists/*
+if command -v apt-get &>/dev/null; then
+    rm -rf /var/lib/apt/lists/*
+fi
 
 echo "Done!"

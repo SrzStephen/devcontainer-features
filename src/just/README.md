@@ -15,8 +15,8 @@ Installs just, a handy way to save and run project-specific commands via justfil
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| version | Version of just to install. Use 'latest' for the newest available. | string | latest |
-| lspVersion | Version of just-lsp to install. Set to 'false' to skip installation. | string | latest |
+| version | Version of just to install. Use 'latest' or an exact version like '1.51.0' (partial versions are not supported). | string | latest |
+| lspVersion | Version of just-lsp to install. Use 'latest' or an exact version like '0.4.5'. Set to 'false' to skip installation. | string | latest |
 
 ## Compatibility
 

@@ -7,11 +7,11 @@
       }
     }
   },
-  "partial-version": {
+  "pinned-version": {
     "image": "debian:bookworm",
     "features": {
       "just": {
-        "version": "1",
+        "version": "1.51.0",
         "lspVersion": "latest"
       }
     }

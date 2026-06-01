@@ -15,7 +15,7 @@ Installs prek, a pre-commit and pre-push hook runner.
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| version | Version of prek to install. Use 'latest' for the newest available. | string | latest |
+| version | Version of prek to install. Use 'latest' or an exact version like '0.4.3' (partial versions are not supported). | string | latest |
 
 ## Compatibility
 

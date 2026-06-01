@@ -14,32 +14,56 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# Resolve "latest", "0", or "0.4" to a full version; pass through "0.4.1".
+# Resolve a version. "latest" is resolved via the github.com releases/latest
+# redirect (no GitHub API); any other value is treated as an exact version and
+# passed through unchanged. Partial versions are not supported.
 resolve_version() {
-    local repo="$1" version="$2" tmp dot_count result
+    local repo="$1" version="$2" result
     if [ "${version}" = "latest" ]; then
         result="$(curl -fsSL "https://github.com/${repo}/releases/latest" \
             -o /dev/null -w '%{url_effective}' | sed 's|.*/||; s/^v//' || true)"
     else
-        dot_count="$(printf '%s' "${version}" | tr -cd '.' | wc -c)"
-        if [ "${dot_count}" -lt 2 ]; then
-            tmp="$(mktemp)"
-            local -a curl_opts=(-fsSL)
-            if [ -n "${GITHUB_TOKEN:-}" ]; then
-                curl_opts+=(-H "Authorization: token ${GITHUB_TOKEN}")
-            fi
-            curl "${curl_opts[@]}" "https://api.github.com/repos/${repo}/releases?per_page=100" -o "${tmp}"
-            result="$(grep '"tag_name"' "${tmp}" | cut -d'"' -f4 | sed 's/^v//' | grep -m1 "^${version//./\\.}\\." || true)"
-            rm -f "${tmp}"
-        else
-            result="${version}"
-        fi
+        result="${version}"
     fi
     if [ -z "${result}" ]; then
         echo "ERROR: Failed to resolve version for ${repo}" >&2
         return 1
     fi
     echo "${result}"
+}
+
+# Download a URL to a destination with up to 3 retries.
+download() {
+    local url="$1" dest="$2" attempt
+    for attempt in 1 2 3; do
+        if curl -fsSL "${url}" -o "${dest}"; then
+            return 0
+        elif [ "${attempt}" -lt 3 ]; then
+            echo "Download attempt ${attempt} failed, retrying in 5s..." >&2
+            sleep 5
+        fi
+    done
+    echo "ERROR: Failed to download ${url} after 3 attempts" >&2
+    return 1
+}
+
+# Verify a file's sha256 against the entry for ${asset} in a checksums file
+# (format: "<sha256>  <filename>", one asset per line).
+verify_checksum() {
+    local file="$1" checksums="$2" asset="$3" expected actual
+    expected="$(awk -v f="${asset}" '$2 == f {print $1}' "${checksums}")"
+    if [ -z "${expected}" ]; then
+        echo "ERROR: no checksum found for ${asset}" >&2
+        return 1
+    fi
+    actual="$(sha256sum "${file}" | cut -d' ' -f1)"
+    if [ "${actual}" != "${expected}" ]; then
+        echo "ERROR: checksum mismatch for ${asset}" >&2
+        echo "  expected: ${expected}" >&2
+        echo "  actual:   ${actual}" >&2
+        return 1
+    fi
+    echo "Verified checksum for ${asset}."
 }
 
 export DEBIAN_FRONTEND=noninteractive
@@ -66,24 +90,19 @@ PREK_VERSION="$(resolve_version j178/prek "${PREK_VERSION}")"
 
 echo "Downloading prek ${PREK_VERSION}..."
 tmp="$(mktemp -d)"
-archive="${tmp}/prek.tar.gz"
-prek_url="https://github.com/j178/prek/releases/download/v${PREK_VERSION}/prek-${ARCH}.tar.gz"
-for attempt in 1 2 3; do
-    if curl -fsSL "${prek_url}" -o "${archive}"; then
-        break
-    elif [ "${attempt}" -lt 3 ]; then
-        echo "Download attempt ${attempt} failed, retrying in 5s..."
-        sleep 5
-    else
-        echo "ERROR: Failed to download prek after 3 attempts"
-        exit 1
-    fi
-done
+trap 'rm -rf "${tmp}"' EXIT
+asset="prek-${ARCH}.tar.gz"
+base_url="https://github.com/j178/prek/releases/download/v${PREK_VERSION}"
+archive="${tmp}/${asset}"
+download "${base_url}/${asset}" "${archive}"
+download "${base_url}/${asset}.sha256" "${tmp}/checksums.txt"
+verify_checksum "${archive}" "${tmp}/checksums.txt" "${asset}"
 tar xzf "${archive}" -C "${tmp}"
 mv "${tmp}/prek-${ARCH}/prek" /usr/local/bin/prek
-rm -rf "${tmp}"
 
-rm -rf /var/lib/apt/lists/*
+if command -v apt-get &>/dev/null; then
+    rm -rf /var/lib/apt/lists/*
+fi
 
 echo "prek ${PREK_VERSION} installed."
 echo "Done!"

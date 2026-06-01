@@ -15,7 +15,7 @@ Installs gitlab-ci-local, a tool to run GitLab CI pipelines locally.
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| version | Version of gitlab-ci-local to install. Use 'latest' for the newest available. | string | latest |
+| version | Version of gitlab-ci-local to install. Use 'latest' or an exact version like '4.72.0' (partial versions are not supported). | string | latest |
 
 ## Compatibility
 

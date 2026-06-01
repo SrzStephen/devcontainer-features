@@ -8,6 +8,13 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+# The NVIDIA Container Toolkit is distributed only as Debian/RPM packages via an
+# apt repository; this feature supports Debian/Ubuntu (apt) only.
+if ! command -v apt-get > /dev/null 2>&1; then
+    echo "(!) The NVIDIA Container Toolkit feature requires a Debian/Ubuntu (apt-based) image." >&2
+    exit 1
+fi
+
 if ! dpkg -s ca-certificates curl gnupg2 > /dev/null 2>&1; then
     if [ "$(find /var/lib/apt/lists/* 2>/dev/null | wc -l)" = "0" ]; then
         apt-get update -y
@@ -21,7 +28,7 @@ curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey \
 
 curl -sL https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list \
     | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' \
-    | tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+    > /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
 apt-get update -y
 
