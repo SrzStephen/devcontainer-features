@@ -7,7 +7,7 @@ Installs the NVIDIA Container Toolkit (nvidia-container-toolkit) for GPU-acceler
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/nvidia-container-toolkit:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/nvidia-container-toolkit:1": {}
 }
 ```
 

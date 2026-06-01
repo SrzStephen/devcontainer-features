@@ -7,7 +7,7 @@ Installs bash-language-server via npm. Optionally installs shellcheck and shfmt 
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/bash-language-server:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/bash-language-server:1": {}
 }
 ```
 

@@ -7,7 +7,7 @@ Installs the AWS Serverless Application Model (SAM) CLI for building, testing, a
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/aws-sam-cli:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/aws-sam-cli:1": {}
 }
 ```
 

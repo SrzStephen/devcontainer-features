@@ -7,7 +7,7 @@ Installs prek, a pre-commit and pre-push hook runner.
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/prek:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/prek:1": {}
 }
 ```
 

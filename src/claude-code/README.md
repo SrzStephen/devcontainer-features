@@ -7,7 +7,7 @@ Installs Claude Code CLI and optionally configures plugin marketplaces, plugins,
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/claude-code:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/claude-code:1": {}
 }
 ```
 

@@ -7,7 +7,7 @@ Installs just, a handy way to save and run project-specific commands via justfil
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/just:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/just:1": {}
 }
 ```
 

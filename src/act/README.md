@@ -7,7 +7,7 @@ Installs act, a tool to run GitHub Actions locally.
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/act:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/act:1": {}
 }
 ```
 

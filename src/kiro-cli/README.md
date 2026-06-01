@@ -7,7 +7,7 @@ Installs the Kiro cli.
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/kiro-cli:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/kiro-cli:1": {}
 }
 ```
 

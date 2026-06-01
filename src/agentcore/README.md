@@ -7,7 +7,7 @@ Installs the AWS Bedrock AgentCore CLI (@aws/agentcore) for building and deployi
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/agentcore:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/agentcore:1": {}
 }
 ```
 

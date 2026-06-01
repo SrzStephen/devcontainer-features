@@ -159,6 +159,18 @@ patch-bump:
         echo "Bumped $file: $version → $new_version"
     done
     just generate-docs
+patch-bump-major:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    find src -name "devcontainer-feature.json" | while read -r file; do
+        version=$(jq -r '.version' "$file")
+        IFS='.' read -r major minor patch <<< "$version"
+        new_version="$((major + 1)).0.0"
+        jq --arg v "$new_version" '.version = $v' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+        echo "Bumped $file: $version → $new_version"
+    done
+    just generate-docs
+
 
 ACT_OPTS := '--container-options "-v /tmp:/tmp" --concurrent-jobs 4'
 

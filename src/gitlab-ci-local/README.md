@@ -7,7 +7,7 @@ Installs gitlab-ci-local, a tool to run GitLab CI pipelines locally.
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/gitlab-ci-local:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/gitlab-ci-local:1": {}
 }
 ```
 

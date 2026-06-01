@@ -7,7 +7,7 @@ Installs the GitLab CLI (glab) for interacting with GitLab repositories and CI/C
 
 ```json
 "features": {
-    "ghcr.io/SrzStephen/devcontainer-features/gitlab-cli:0": {}
+    "ghcr.io/SrzStephen/devcontainer-features/gitlab-cli:1": {}
 }
 ```
 
