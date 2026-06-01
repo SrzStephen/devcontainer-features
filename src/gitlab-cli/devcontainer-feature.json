@@ -1,17 +1,27 @@
 {
   "id": "gitlab-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "GitLab CLI",
   "description": "Installs the GitLab CLI (glab) for interacting with GitLab repositories and CI/CD pipelines.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/gitlab-cli/README.md",
-  "keywords": ["gitlab", "cli", "glab", "git"],
+  "keywords": [
+    "gitlab",
+    "cli",
+    "glab",
+    "git"
+  ],
   "options": {
     "version": {
       "type": "string",
-      "proposals": ["latest", "1.50.0"],
+      "proposals": [
+        "latest",
+        "1.50.0"
+      ],
       "default": "latest",
       "description": "Version of glab to install (e.g. '1.50.0'). Use 'latest' for the newest available."
     }
   },
-  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
 }
