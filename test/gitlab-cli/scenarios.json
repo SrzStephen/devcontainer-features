@@ -1,0 +1,22 @@
+{
+  "latest-version": {
+    "image": "debian:bookworm",
+    "features": {
+      "gitlab-cli": {
+        "version": "latest"
+      }
+    }
+  },
+  "non-root-user": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "gitlab-cli": {}
+    }
+  },
+  "alpine": {
+    "image": "alpine:3.20",
+    "features": {
+      "gitlab-cli": {}
+    }
+  }
+}
