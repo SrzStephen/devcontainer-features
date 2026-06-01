@@ -4,13 +4,7 @@
   "name": "Claude Code",
   "description": "Installs Claude Code CLI and optionally configures plugin marketplaces, plugins, attribution settings and custom statusline.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/claude-code/README.md",
-  "keywords": [
-    "claude",
-    "ai",
-    "anthropic",
-    "cli",
-    "coding-assistant"
-  ],
+  "keywords": ["claude", "ai", "anthropic", "cli", "coding-assistant"],
   "options": {
     "marketplace": {
       "type": "string",
@@ -38,7 +32,5 @@
       "description": "When true, sets plan mode as the default permission mode in ~/.claude/settings.json, so Claude plans before executing actions."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }

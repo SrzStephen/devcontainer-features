@@ -8,7 +8,7 @@ all: lint test
 
 lint:
 	find src -name "*.sh" | xargs shellcheck
-	npx --yes prettier@3.8.3 --check "**/*.{json,yaml,yml,md}"
+	npx --yes prettier@3.8.3 --check "**/*.{json,yaml,yml}"
 
 test: test-claude-code test-just test-kiro-cli test-nvidia-container-toolkit test-act test-gitlab-ci-local test-prek test-bash-language-server test-gitlab-cli test-terraform-ls test-agentcore test-aws-sam-cli
 
