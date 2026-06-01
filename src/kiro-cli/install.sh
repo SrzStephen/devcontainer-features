@@ -161,6 +161,7 @@ fi
 if command -v apk &>/dev/null; then
     apk add --no-cache xdg-utils
 elif command -v apt-get &>/dev/null; then
+    apt-get update -y
     apt-get install -y --no-install-recommends xdg-utils
 fi
 
