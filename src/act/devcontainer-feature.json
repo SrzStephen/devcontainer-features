@@ -4,24 +4,14 @@
   "name": "act",
   "description": "Installs act, a tool to run GitHub Actions locally.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/act/README.md",
-  "keywords": [
-    "act",
-    "github-actions",
-    "ci",
-    "local"
-  ],
+  "keywords": ["act", "github-actions", "ci", "local"],
   "options": {
     "version": {
       "type": "string",
-      "proposals": [
-        "latest",
-        "0.2.89"
-      ],
+      "proposals": ["latest", "0.2.89"],
       "default": "latest",
       "description": "Version of act to install. Use 'latest' or an exact version like '0.2.89' (partial versions are not supported)."
     }
   },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
 }
