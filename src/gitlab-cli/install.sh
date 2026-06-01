@@ -16,15 +16,15 @@ fi
 
 # Resolve "latest" to the current release version; pass through exact versions.
 resolve_version() {
-    local repo="$1" version="$2" result
+    local version="$1" result
     if [ "${version}" = "latest" ]; then
-        result="$(curl -fsSL "https://github.com/${repo}/releases/latest" \
-            -o /dev/null -w '%{url_effective}' | sed 's|.*/||; s/^v//' || true)"
+        result="$(curl -fsSL "https://gitlab.com/api/v4/projects/gitlab-org%2Fcli/releases?per_page=1" \
+            | grep -o '"tag_name":"[^"]*"' | head -1 | cut -d'"' -f4 | sed 's/^v//' || true)"
     else
         result="${version}"
     fi
     if [ -z "${result}" ]; then
-        echo "ERROR: Failed to resolve version for ${repo}" >&2
+        echo "ERROR: Failed to resolve version for gitlab-org/cli" >&2
         return 1
     fi
     echo "${result}"
@@ -42,7 +42,7 @@ else
 fi
 
 case "$(uname -m)" in
-    x86_64)  ARCH="x86_64" ;;
+    x86_64)  ARCH="amd64" ;;
     aarch64) ARCH="arm64" ;;
     *)
         echo "(!) Architecture $(uname -m) unsupported"
@@ -50,12 +50,12 @@ case "$(uname -m)" in
         ;;
 esac
 
-GLAB_VERSION="$(resolve_version gitlab-org/cli "${GLAB_VERSION}")"
+GLAB_VERSION="$(resolve_version "${GLAB_VERSION}")"
 
 echo "Downloading glab ${GLAB_VERSION}..."
 tmp="$(mktemp -d)"
 archive="${tmp}/glab.tar.gz"
-glab_url="https://github.com/gitlab-org/cli/releases/download/v${GLAB_VERSION}/glab_${GLAB_VERSION}_Linux_${ARCH}.tar.gz"
+glab_url="https://gitlab.com/api/v4/projects/gitlab-org%2Fcli/packages/generic/glab/${GLAB_VERSION}/glab_${GLAB_VERSION}_linux_${ARCH}.tar.gz"
 for attempt in 1 2 3; do
     if curl -fsSL "${glab_url}" -o "${archive}"; then
         break
