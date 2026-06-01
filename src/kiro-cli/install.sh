@@ -154,6 +154,16 @@ else
     rm -rf "${TMP_DIR}"
 fi
 
+# ---------------------------------------------------------------------------
+# xdg-utils (provides xdg-open)
+# ---------------------------------------------------------------------------
+
+if command -v apk &>/dev/null; then
+    apk add --no-cache xdg-utils
+elif command -v apt-get &>/dev/null; then
+    apt-get install -y --no-install-recommends xdg-utils
+fi
+
 if command -v apt-get &>/dev/null; then
     rm -rf /var/lib/apt/lists/*
 fi
