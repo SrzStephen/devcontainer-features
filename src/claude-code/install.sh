@@ -73,6 +73,11 @@ _install_pkg() {
 
 # ---------------------------------------------------------------------------
 # Agent skills (canonical helpers, shared verbatim across features)
+#
+# requires: bash with set -e; run_as_user (runs a command string as the remote
+#   user); curl, tar and sha256sum on PATH; the SKILLS variable (comma-separated
+#   list, may be empty or unset). Usage: validate_skills early, then
+#   install_skills <agent> once the agent itself is installed.
 # ---------------------------------------------------------------------------
 
 # Print each non-blank, whitespace-trimmed entry of the comma-separated SKILLS
@@ -90,10 +95,15 @@ _skills_entries() {
 }
 
 # Fail before anything runs if any SKILLS entry contains characters outside the
-# allow-list, since entries are interpolated into a shell command string.
+# allow-list, since entries are interpolated into a shell command string, or
+# starts with a dash, which the skills CLI would parse as an option.
 validate_skills() {
     local _entry
     while IFS= read -r _entry; do
+        if [ "${_entry:0:1}" = "-" ]; then
+            echo "ERROR: refusing unsafe skills entry (must not start with a dash): ${_entry}" >&2
+            return 1
+        fi
         if ! printf '%s' "${_entry}" | grep -qE '^[A-Za-z0-9._/:@~+-]+$'; then
             echo "ERROR: refusing unsafe skills entry (only A-Za-z0-9 . _ / : @ ~ + - are allowed): ${_entry}" >&2
             return 1
@@ -107,10 +117,14 @@ validate_skills() {
 # verifying the published SHA-256 checksum. Skipped when a suitable node and npx
 # are already present.
 _ensure_node() {
-    local _major="" _arch _base _suffix="" _ver _file _sums _expected _tmp
+    local _nodever="" _major=0 _minor=0 _arch _base _suffix="" _ver _file _sums _expected _tmp
     if command -v node &>/dev/null && command -v npx &>/dev/null; then
-        _major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || true)"
-        if [ "${_major:-0}" -ge 22 ] 2>/dev/null; then
+        _nodever="$(node -p 'process.versions.node' 2>/dev/null || true)"
+        _major="${_nodever%%.*}"
+        _minor="${_nodever#*.}"
+        _minor="${_minor%%.*}"
+        if [ "${_major:-0}" -gt 22 ] 2>/dev/null ||
+            { [ "${_major:-0}" -eq 22 ] && [ "${_minor:-0}" -ge 20 ]; } 2>/dev/null; then
             return 0
         fi
     fi
@@ -136,14 +150,22 @@ _ensure_node() {
 
     _tmp="$(mktemp -d)"
     echo "Installing Node.js ${_ver} (${_arch}${_suffix})..."
-    curl -fsSL -o "${_tmp}/${_file}" "${_base}/${_ver}/${_file}"
+    if ! curl -fsSL -o "${_tmp}/${_file}" "${_base}/${_ver}/${_file}"; then
+        echo "ERROR: failed to download ${_file}" >&2
+        rm -rf "${_tmp}"
+        return 1
+    fi
     if [ "$(sha256sum "${_tmp}/${_file}" | cut -d' ' -f1)" != "${_expected}" ]; then
         echo "ERROR: checksum mismatch for ${_file}" >&2
         rm -rf "${_tmp}"
         return 1
     fi
-    tar -xzf "${_tmp}/${_file}" -C /usr/local --strip-components=1 --no-same-owner \
-        --exclude='*/CHANGELOG.md' --exclude='*/LICENSE' --exclude='*/README.md'
+    if ! tar -xzf "${_tmp}/${_file}" -C /usr/local --strip-components=1 --no-same-owner \
+        --exclude='*/CHANGELOG.md' --exclude='*/LICENSE' --exclude='*/README.md'; then
+        echo "ERROR: failed to extract ${_file}" >&2
+        rm -rf "${_tmp}"
+        return 1
+    fi
     rm -rf "${_tmp}"
 }
 
