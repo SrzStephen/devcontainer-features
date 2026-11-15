@@ -33,6 +33,11 @@
       "type": "boolean",
       "default": true,
       "description": "Disable the Kiro CLI greeting (chat.greeting.enabled=false). When false, the setting is not touched."
+    },
+    "skills": {
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated list of agent skill sources to install globally for Kiro CLI via the skills CLI (npx skills add). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty."
     }
   }
 }

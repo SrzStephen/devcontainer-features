@@ -31,6 +31,149 @@ if [ -n "${DEFAULT_MODEL}" ] && ! echo "${DEFAULT_MODEL}" | grep -qE '^[A-Za-z0-
     exit 1
 fi
 
+SKILLS="${SKILLS:-""}"
+REMOTE_USER="${_REMOTE_USER:-"root"}"
+
+run_as_user() {
+    if command -v runuser &>/dev/null; then
+        runuser -l "${REMOTE_USER}" -c "${*}"
+    else
+        su -l "${REMOTE_USER}" -c "${*}"
+    fi
+}
+
+_install_pkg() {
+    if command -v apk &>/dev/null; then
+        apk add --no-cache "$@"
+    else
+        if [ "$(find /var/lib/apt/lists/* 2>/dev/null | wc -l)" = "0" ]; then
+            apt-get update -y
+        fi
+        apt-get install -y --no-install-recommends "$@"
+    fi
+}
+
+
+# ---------------------------------------------------------------------------
+# Agent skills (canonical helpers, shared verbatim across features)
+#
+# requires: bash with set -e; run_as_user (runs a command string as the remote
+#   user); curl, tar and sha256sum on PATH; the SKILLS variable (comma-separated
+#   list, may be empty or unset). Usage: validate_skills early, then
+#   install_skills <agent> once the agent itself is installed.
+# ---------------------------------------------------------------------------
+
+# Print each non-blank, whitespace-trimmed entry of the comma-separated SKILLS
+# option on its own line.
+_skills_entries() {
+    local _entry
+    local -a _raw
+    IFS=',' read -ra _raw <<< "${SKILLS:-}"
+    for _entry in "${_raw[@]}"; do
+        _entry="${_entry#"${_entry%%[![:space:]]*}"}"
+        _entry="${_entry%"${_entry##*[![:space:]]}"}"
+        [ -n "${_entry}" ] && printf '%s\n' "${_entry}"
+    done
+    return 0
+}
+
+# Fail before anything runs if any SKILLS entry contains characters outside the
+# allow-list, since entries are interpolated into a shell command string, or
+# starts with a dash, which the skills CLI would parse as an option.
+validate_skills() {
+    local _entry
+    while IFS= read -r _entry; do
+        if [ "${_entry:0:1}" = "-" ]; then
+            echo "ERROR: refusing unsafe skills entry (must not start with a dash): ${_entry}" >&2
+            return 1
+        fi
+        if ! printf '%s' "${_entry}" | grep -qE '^[A-Za-z0-9._/:@~+-]+$'; then
+            echo "ERROR: refusing unsafe skills entry (only A-Za-z0-9 . _ / : @ ~ + - are allowed): ${_entry}" >&2
+            return 1
+        fi
+    done < <(_skills_entries)
+}
+
+# The skills CLI requires Node.js >= 22.20, newer than the Debian and Alpine
+# distro packages. Install the latest Node 22 release into /usr/local from the
+# official tarball (nodejs.org, or the unofficial musl builds on Alpine),
+# verifying the published SHA-256 checksum. Skipped when a suitable node and npx
+# are already present.
+_ensure_node() {
+    local _nodever="" _major=0 _minor=0 _arch _base _suffix="" _ver _file _sums _expected _tmp
+    if command -v node &>/dev/null && command -v npx &>/dev/null; then
+        _nodever="$(node -p 'process.versions.node' 2>/dev/null || true)"
+        _major="${_nodever%%.*}"
+        _minor="${_nodever#*.}"
+        _minor="${_minor%%.*}"
+        if [ "${_major:-0}" -gt 22 ] 2>/dev/null ||
+            { [ "${_major:-0}" -eq 22 ] && [ "${_minor:-0}" -ge 20 ]; } 2>/dev/null; then
+            return 0
+        fi
+    fi
+
+    case "$(uname -m)" in
+        x86_64) _arch=x64 ;;
+        aarch64 | arm64) _arch=arm64 ;;
+        *) echo "ERROR: unsupported architecture for Node.js install: $(uname -m)" >&2; return 1 ;;
+    esac
+    _base="https://nodejs.org/dist"
+    if command -v apk &>/dev/null; then
+        _base="https://unofficial-builds.nodejs.org/download/release"
+        _suffix="-musl"
+        apk add --no-cache libstdc++
+    fi
+
+    _ver="$(curl -fsSL "https://nodejs.org/dist/latest-v22.x/SHASUMS256.txt" | grep -oE 'node-v22\.[0-9]+\.[0-9]+' | head -1 | sed 's/^node-//')"
+    [ -n "${_ver}" ] || { echo "ERROR: could not determine latest Node.js 22 version" >&2; return 1; }
+    _file="node-${_ver}-linux-${_arch}${_suffix}.tar.gz"
+    _sums="$(curl -fsSL "${_base}/${_ver}/SHASUMS256.txt")"
+    _expected="$(printf '%s\n' "${_sums}" | grep " ${_file}\$" | cut -d' ' -f1)"
+    [ -n "${_expected}" ] || { echo "ERROR: no checksum published for ${_file}" >&2; return 1; }
+
+    _tmp="$(mktemp -d)"
+    echo "Installing Node.js ${_ver} (${_arch}${_suffix})..."
+    if ! curl -fsSL -o "${_tmp}/${_file}" "${_base}/${_ver}/${_file}"; then
+        echo "ERROR: failed to download ${_file}" >&2
+        rm -rf "${_tmp}"
+        return 1
+    fi
+    if [ "$(sha256sum "${_tmp}/${_file}" | cut -d' ' -f1)" != "${_expected}" ]; then
+        echo "ERROR: checksum mismatch for ${_file}" >&2
+        rm -rf "${_tmp}"
+        return 1
+    fi
+    if ! tar -xzf "${_tmp}/${_file}" -C /usr/local --strip-components=1 --no-same-owner \
+        --exclude='*/CHANGELOG.md' --exclude='*/LICENSE' --exclude='*/README.md'; then
+        echo "ERROR: failed to extract ${_file}" >&2
+        rm -rf "${_tmp}"
+        return 1
+    fi
+    rm -rf "${_tmp}"
+}
+
+# install_skills <agent>: install each SKILLS entry for the given agent id using
+# the skills CLI. Does nothing (and installs no Node) when SKILLS is blank.
+install_skills() {
+    local _agent="$1" _entry
+    local -a _entries
+    validate_skills || return 1
+    mapfile -t _entries < <(_skills_entries)
+    [ "${#_entries[@]}" -gt 0 ] || return 0
+
+    _ensure_node
+    for _entry in "${_entries[@]}"; do
+        echo "Installing skills: ${_entry} (agent: ${_agent})"
+        run_as_user "npx -y skills add ${_entry} -g -y -a ${_agent}"
+    done
+}
+
+validate_skills
+
+if [ -n "$(_skills_entries)" ] && ! command -v curl &>/dev/null; then
+    _install_pkg curl ca-certificates
+fi
+
 BASE_URL="https://prod.download.cli.kiro.dev/stable/${VERSION}"
 
 export DEBIAN_FRONTEND=noninteractive
@@ -219,6 +362,8 @@ if [ "${DISABLE_GREETING}" = "true" ]; then
     echo "Disabling Kiro CLI greeting..."
     apply_kiro_setting "chat.greeting.enabled" "false"
 fi
+
+install_skills kiro-cli
 
 # ---------------------------------------------------------------------------
 # Verify

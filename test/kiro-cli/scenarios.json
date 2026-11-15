@@ -8,19 +8,26 @@
   "pinned-version": {
     "image": "mcr.microsoft.com/devcontainers/base:debian",
     "features": {
-      "kiro-cli": { "version": "2.3.0" }
+      "kiro-cli": {
+        "version": "2.3.0"
+      }
     }
   },
   "disable-autoupdates": {
     "image": "mcr.microsoft.com/devcontainers/base:debian",
     "features": {
-      "kiro-cli": { "disableAutoupdates": true }
+      "kiro-cli": {
+        "disableAutoupdates": true
+      }
     }
   },
   "settings": {
     "image": "mcr.microsoft.com/devcontainers/base:debian",
     "features": {
-      "kiro-cli": { "defaultModel": "claude-sonnet-4.6", "agentEngine": "v3" }
+      "kiro-cli": {
+        "defaultModel": "claude-sonnet-4.6",
+        "agentEngine": "v3"
+      }
     }
   },
   "settings-empty": {
@@ -31,6 +38,42 @@
   },
   "alpine": {
     "image": "alpine:3.20",
+    "features": {
+      "kiro-cli": {}
+    }
+  },
+  "skills": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "kiro-cli": {
+        "skills": "vercel-labs/agent-skills"
+      }
+    }
+  },
+  "skills-non-root": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "kiro-cli": {
+        "skills": "vercel-labs/agent-skills"
+      }
+    }
+  },
+  "skills-empty": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "kiro-cli": {}
+    }
+  },
+  "skills-blank": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "kiro-cli": {
+        "skills": " , "
+      }
+    }
+  },
+  "skills-invalid": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
     "features": {
       "kiro-cli": {}
     }
