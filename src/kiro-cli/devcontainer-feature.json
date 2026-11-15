@@ -17,6 +17,22 @@
       "type": "boolean",
       "default": false,
       "description": "Disable automatic background updates for Kiro CLI."
+    },
+    "defaultModel": {
+      "type": "string",
+      "default": "",
+      "description": "Default chat model (chat.defaultModel), e.g. 'claude-sonnet-4.6'. Empty means the setting is not touched."
+    },
+    "agentEngine": {
+      "type": "string",
+      "proposals": ["", "v3", "v2"],
+      "default": "",
+      "description": "Agent engine (chat.agentEngine): 'v1', 'v2' or 'v3'. Empty means the setting is not touched."
+    },
+    "disableGreeting": {
+      "type": "boolean",
+      "default": true,
+      "description": "Disable the Kiro CLI greeting (chat.greeting.enabled=false). When false, the setting is not touched."
     }
   }
 }

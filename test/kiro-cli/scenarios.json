@@ -17,6 +17,18 @@
       "kiro-cli": { "disableAutoupdates": true }
     }
   },
+  "settings": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "kiro-cli": { "defaultModel": "claude-sonnet-4.6", "agentEngine": "v3" }
+    }
+  },
+  "settings-empty": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "kiro-cli": {}
+    }
+  },
   "alpine": {
     "image": "alpine:3.20",
     "features": {

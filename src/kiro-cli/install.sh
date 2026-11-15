@@ -9,9 +9,25 @@ set -euo pipefail
 
 VERSION="${VERSION:-"latest"}"
 DISABLE_AUTOUPDATES="${DISABLEAUTOUPDATES:-"false"}"
+DEFAULT_MODEL="${DEFAULTMODEL:-""}"
+AGENT_ENGINE="${AGENTENGINE:-""}"
+DISABLE_GREETING="${DISABLEGREETING:-"true"}"
 
 if [ "${VERSION}" != "latest" ] && ! echo "${VERSION}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
     echo "Error: version must be 'latest' or a full version like '2.3.0' (got: '${VERSION}')" >&2
+    exit 1
+fi
+
+case "${AGENT_ENGINE}" in
+    ""|v1|v2|v3) ;;
+    *)
+        echo "Error: agentEngine must be empty, 'v1', 'v2' or 'v3' (got: '${AGENT_ENGINE}')" >&2
+        exit 1
+        ;;
+esac
+
+if [ -n "${DEFAULT_MODEL}" ] && ! echo "${DEFAULT_MODEL}" | grep -qE '^[A-Za-z0-9._:/-]+$'; then
+    echo "Error: defaultModel contains invalid characters (got: '${DEFAULT_MODEL}')" >&2
     exit 1
 fi
 
@@ -103,8 +119,8 @@ if command -v dpkg &>/dev/null && [ "${ARCH}" = "x86_64" ] && ! _use_musl; then
     TMP_EXTRACT="$(mktemp -d)"
     dpkg-deb -x "${TMP_DEB}" "${TMP_EXTRACT}"
     install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli" /usr/local/bin/kiro-cli
-    install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli-chat" /usr/local/bin/kiro-cli-chat
-    install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli-term" /usr/local/bin/kiro-cli-term
+    if [ -f "${TMP_EXTRACT}/usr/bin/kiro-cli-chat" ]; then install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli-chat" /usr/local/bin/kiro-cli-chat; fi
+    if [ -f "${TMP_EXTRACT}/usr/bin/kiro-cli-term" ]; then install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli-term" /usr/local/bin/kiro-cli-term; fi
     rm -rf "${TMP_EXTRACT}" "${TMP_DEB}"
 else
     # Zip-based install for arm64, musl, and non-Debian systems.
@@ -149,8 +165,8 @@ else
     verify_sha256_bare "${TMP_DIR}/kiro.zip" "${TMP_DIR}/kiro.zip.sha256"
     unzip -q "${TMP_DIR}/kiro.zip" -d "${TMP_DIR}"
     install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli" /usr/local/bin/kiro-cli
-    install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli-chat" /usr/local/bin/kiro-cli-chat
-    install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli-term" /usr/local/bin/kiro-cli-term
+    if [ -f "${TMP_DIR}/kirocli/bin/kiro-cli-chat" ]; then install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli-chat" /usr/local/bin/kiro-cli-chat; fi
+    if [ -f "${TMP_DIR}/kirocli/bin/kiro-cli-term" ]; then install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli-term" /usr/local/bin/kiro-cli-term; fi
     rm -rf "${TMP_DIR}"
 fi
 
@@ -170,18 +186,38 @@ if command -v apt-get &>/dev/null; then
 fi
 
 # ---------------------------------------------------------------------------
-# Autoupdate settings
+# Settings
 # ---------------------------------------------------------------------------
+
+# Apply a kiro-cli setting for root and, when different, the remote user.
+apply_kiro_setting() {
+    local key="$1" value="$2"
+    kiro-cli settings "${key}" "${value}" 2>/dev/null || \
+        echo "Warning: could not apply ${key} for root" >&2
+    if [ "${_REMOTE_USER:-root}" != "root" ]; then
+        su "${_REMOTE_USER}" -c "kiro-cli settings \"${key}\" \"${value}\"" 2>/dev/null || \
+            echo "Warning: could not apply ${key} for ${_REMOTE_USER}" >&2
+    fi
+}
 
 if [ "${DISABLE_AUTOUPDATES}" = "true" ]; then
     echo "Disabling Kiro CLI autoupdates..."
-    kiro-cli settings "app.disableAutoupdates" "true" 2>/dev/null || \
-        echo "Warning: could not apply autoupdate setting for root" >&2
-    # Also apply for the non-root container user when different from root.
-    if [ "${_REMOTE_USER:-root}" != "root" ]; then
-        su "${_REMOTE_USER}" -c 'kiro-cli settings "app.disableAutoupdates" "true"' 2>/dev/null || \
-            echo "Warning: could not apply autoupdate setting for ${_REMOTE_USER}" >&2
-    fi
+    apply_kiro_setting "app.disableAutoupdates" "true"
+fi
+
+if [ -n "${DEFAULT_MODEL}" ]; then
+    echo "Setting Kiro CLI default model to ${DEFAULT_MODEL}..."
+    apply_kiro_setting "chat.defaultModel" "${DEFAULT_MODEL}"
+fi
+
+if [ -n "${AGENT_ENGINE}" ]; then
+    echo "Setting Kiro CLI agent engine to ${AGENT_ENGINE}..."
+    apply_kiro_setting "chat.agentEngine" "${AGENT_ENGINE}"
+fi
+
+if [ "${DISABLE_GREETING}" = "true" ]; then
+    echo "Disabling Kiro CLI greeting..."
+    apply_kiro_setting "chat.greeting.enabled" "false"
 fi
 
 # ---------------------------------------------------------------------------
