@@ -1,0 +1,47 @@
+{
+  "non-root-user": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": { "herdr": {} }
+  },
+  "plugins": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "herdr": {
+        "plugins": "ogulcancelik/herdr-plugin-examples/dev-layout-bootstrap"
+      }
+    }
+  },
+  "plugins-empty": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": { "herdr": {} }
+  },
+  "plugins-invalid": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": { "herdr": {} }
+  },
+  "plugins-nonexistent": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": { "herdr": {} }
+  },
+  "skills": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "herdr": {
+        "skills": "vercel-labs/agent-skills",
+        "skillsAgent": "claude-code"
+      }
+    }
+  },
+  "skills-empty": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": { "herdr": {} }
+  },
+  "skills-no-agent": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": { "herdr": { "skills": "x/y" } }
+  },
+  "alpine": {
+    "image": "alpine:3.20",
+    "features": { "herdr": {} }
+  }
+}

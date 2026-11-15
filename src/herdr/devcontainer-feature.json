@@ -1,0 +1,26 @@
+{
+  "id": "herdr",
+  "version": "1.0.0",
+  "name": "herdr",
+  "description": "Installs herdr, a terminal workspace manager for AI coding agents, for the remote user, with optional plugins and agent skills.",
+  "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/herdr/README.md",
+  "keywords": ["herdr", "terminal", "multiplexer", "ai", "coding-assistant"],
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"],
+  "options": {
+    "plugins": {
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated list of herdr plugins to install from GitHub (herdr plugin install <entry> --yes). Each entry is owner/repo or owner/repo/subdir. Skipped when empty."
+    },
+    "skills": {
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated list of agent skill sources to install globally via the skills CLI (npx skills add). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Requires skillsAgent. Node.js is installed on demand. Skipped when empty."
+    },
+    "skillsAgent": {
+      "type": "string",
+      "default": "",
+      "description": "Agent id the skills are installed for (skills CLI -a flag), e.g. claude-code, kiro-cli or hermes-agent. herdr is not an agent itself, so there is no default; when skills is set but this is empty a warning is printed and no skills are installed."
+    }
+  }
+}
