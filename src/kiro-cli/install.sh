@@ -26,6 +26,13 @@ case "${AGENT_ENGINE}" in
         ;;
 esac
 
+case "${DEFAULT_MODEL}" in
+    -*)
+        echo "Error: defaultModel must not start with a dash (got: '${DEFAULT_MODEL}')" >&2
+        exit 1
+        ;;
+esac
+
 if [ -n "${DEFAULT_MODEL}" ] && ! echo "${DEFAULT_MODEL}" | grep -qE '^[A-Za-z0-9._:/-]+$'; then
     echo "Error: defaultModel contains invalid characters (got: '${DEFAULT_MODEL}')" >&2
     exit 1

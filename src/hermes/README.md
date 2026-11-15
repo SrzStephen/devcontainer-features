@@ -15,7 +15,7 @@ Installs Hermes Agent (Nous Research) for the remote user, with optional plugins
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| plugins | Comma-separated list of Hermes plugins to install and enable (hermes plugins install <entry> --enable). Each entry is a curated catalog name (e.g. snyk), an owner/repo shorthand or a Git URL. Skipped when empty. | string | - |
+| plugins | Comma-separated list of Hermes plugins to install and enable (hermes plugins install ENTRY --enable). Each entry is a curated catalog name (e.g. snyk), an owner/repo shorthand or a Git URL. Skipped when empty. | string | - |
 | skills | Comma-separated list of agent skill sources to install globally for Hermes Agent via the skills CLI (npx skills add). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty. | string | - |
 
 ## Compatibility
@@ -42,11 +42,11 @@ The `plugins` option takes a comma-separated list. Each entry is installed and e
 
 The `skills` option takes a comma-separated list of skill sources, for example `vercel-labs/agent-skills` or a full GitHub URL. Each entry is installed globally for the remote user with `npx -y skills add <source> -g -y -a hermes-agent`, so the skills land in `~/.hermes/skills`. The option is blank by default.
 
-Node.js is installed on demand, and only when at least one non-blank entry is given. The skills CLI needs Node 22.20 or newer, so the latest Node 22 release is downloaded from nodejs.org, checksum-verified and unpacked into `/usr/local`. An existing Node 22 or newer is reused. Blank values such as a lone comma or spaces install nothing. The same entry rules as for plugins apply.
+Node.js is installed on demand, and only when at least one non-blank entry is given. The skills CLI needs Node 22.20 or newer, so the latest Node 22 release is downloaded from nodejs.org, checksum-verified and unpacked into `/usr/local` (the unofficial musl builds on Alpine). An existing Node 22.20 or newer is reused. Blank values such as a lone comma or spaces install nothing. The same entry rules as for plugins apply.
 
 ## Persisting state
 
-`~/.hermes` holds Hermes configuration, installed plugins, skills, sessions and the Hermes checkout itself. It is a good candidate for a named volume mount if you want state to survive container rebuilds. Mounting an empty volume over it hides what the feature installed there, including the Hermes checkout, so only do that if you reinstall or seed the volume yourself.
+`~/.hermes` holds Hermes configuration, installed plugins, skills, sessions and the Hermes checkout itself. It is a good candidate for a named volume mount if you want state to survive container rebuilds. A new, empty named volume mounted over it is seeded by Docker with the directory's contents and ownership from the image, including the Hermes checkout, so no `chown` is needed. Once the volume exists it overrides the image: plugins added or changed in the `plugins` option, or a newer Hermes checkout after a rebuild, do not reach it. Add them by hand or recreate the volume.
 
 
 ---

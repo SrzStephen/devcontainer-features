@@ -10,7 +10,7 @@
     "plugins": {
       "type": "string",
       "default": "",
-      "description": "Comma-separated list of herdr plugins to install from GitHub (herdr plugin install <entry> --yes). Each entry is owner/repo or owner/repo/subdir. Skipped when empty."
+      "description": "Comma-separated list of herdr plugins to install from GitHub (herdr plugin install ENTRY --yes). Each entry is owner/repo or owner/repo/subdir. Skipped when empty."
     },
     "skills": {
       "type": "string",

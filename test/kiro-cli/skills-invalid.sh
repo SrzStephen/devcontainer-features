@@ -21,4 +21,10 @@ SKILLS='--help' bash "${INSTALL_SH}" >/tmp/skills-invalid-dash.log 2>&1 || rc=$?
 check "dash entry exits non-zero" test "${rc}" -ne 0
 check "dash entry error printed" grep -q "start with a dash" /tmp/skills-invalid-dash.log
 
+# A model name starting with a dash is rejected with a clear error.
+rc=0
+DEFAULTMODEL='-x' bash "${INSTALL_SH}" >/tmp/model-invalid-dash.log 2>&1 || rc=$?
+check "dash model exits non-zero" test "${rc}" -ne 0
+check "dash model error printed" grep -q "must not start with a dash" /tmp/model-invalid-dash.log
+
 reportResults

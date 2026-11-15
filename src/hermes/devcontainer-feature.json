@@ -10,7 +10,7 @@
     "plugins": {
       "type": "string",
       "default": "",
-      "description": "Comma-separated list of Hermes plugins to install and enable (hermes plugins install <entry> --enable). Each entry is a curated catalog name (e.g. snyk), an owner/repo shorthand or a Git URL. Skipped when empty."
+      "description": "Comma-separated list of Hermes plugins to install and enable (hermes plugins install ENTRY --enable). Each entry is a curated catalog name (e.g. snyk), an owner/repo shorthand or a Git URL. Skipped when empty."
     },
     "skills": {
       "type": "string",

@@ -55,6 +55,6 @@ To keep layouts across container rebuilds, mount that directory as a named volum
 
 Things to know:
 
-- A new named volume is created owned by root, so the remote user cannot write to it until you `chown` it, as the `postCreateCommand` above does. Adjust `vscode` and the paths to your remote user.
-- Mounting a volume over `~/.config/herdr` hides plugins installed at build time by the `plugins` option. Install them again with `herdr plugin install <entry> --yes` after the first start, or leave `plugins` empty and manage them in the volume.
+- A new, empty named volume mounted over a directory that exists in the image is seeded by Docker with that directory's contents and ownership. The `chown` in the `postCreateCommand` above is only needed when the path did not exist in the image (otherwise it is harmless). Adjust `vscode` and the paths to your remote user.
+- Once a volume exists it overrides the image. Plugins added or changed in the `plugins` option after that do not reach it, so install them by hand with `herdr plugin install owner/repo --yes`, or recreate the volume.
 - Sockets and running processes do not survive a rebuild. Only layouts and resumable agent sessions are restored.
