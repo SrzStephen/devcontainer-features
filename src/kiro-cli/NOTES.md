@@ -19,7 +19,7 @@ The installer automatically detects the system's libc:
 
 `defaultModel`, `agentEngine` and `disableGreeting` are applied with `kiro-cli settings` for root and, when different, the remote user.
 
-- `defaultModel` (default empty): sets `chat.defaultModel`. Must match `^[A-Za-z0-9._:/-]+$`.
+- `defaultModel` (default empty): sets `chat.defaultModel`. Only letters, digits and the characters `.`, `_`, `:`, `/` and `-` are allowed.
 - `agentEngine` (default empty): sets `chat.agentEngine`. Must be empty, `v1`, `v2` or `v3`.
 - `disableGreeting` (default `true`): runs `kiro-cli settings chat.greeting.enabled false`.
 
