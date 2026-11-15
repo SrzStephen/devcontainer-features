@@ -1,0 +1,54 @@
+{
+  "non-root-user": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "hermes": {}
+    }
+  },
+  "plugins": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "hermes": {
+        "plugins": "snyk"
+      }
+    }
+  },
+  "plugins-empty": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "hermes": {}
+    }
+  },
+  "plugins-invalid": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "hermes": {}
+    }
+  },
+  "plugins-nonexistent": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "hermes": {}
+    }
+  },
+  "skills": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "hermes": {
+        "skills": "vercel-labs/agent-skills"
+      }
+    }
+  },
+  "skills-empty": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "hermes": {}
+    }
+  },
+  "alpine": {
+    "image": "alpine:3.20",
+    "features": {
+      "hermes": {}
+    }
+  }
+}
