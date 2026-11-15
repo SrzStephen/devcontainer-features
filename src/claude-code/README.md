@@ -19,6 +19,7 @@ Installs Claude Code CLI and optionally configures plugin marketplaces, plugins,
 | plugin | Comma-separated list of plugins to install after marketplaces are configured. Each entry accepts plugin-name@marketplace-name format (e.g. superpowers@superpowers-marketplace) or a full GitHub URL. Skipped when empty. | string | - |
 | removeAttribution | When true, injects empty commit and pr attribution strings into ~/.claude/settings.json, suppressing Co-Authored-By lines from Claude Code commits. | boolean | false |
 | statusline | When true, installs statusline.sh to ~/.claude/statusline-command.sh and configures it as the Claude Code status line in ~/.claude/settings.json. | boolean | false |
+| skills | Comma-separated list of agent skill sources to install globally for Claude Code via the skills CLI (npx skills add). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty. | string | - |
 | planMode | When true, sets plan mode as the default permission mode in ~/.claude/settings.json, so Claude plans before executing actions. | boolean | true |
 
 ## Compatibility
@@ -29,6 +30,12 @@ Installs Claude Code CLI and optionally configures plugin marketplaces, plugins,
 | Alpine Linux    | ✓ tested  | Tested in CI   |
 
 **Architectures:** x86_64, aarch64
+
+## Agent Skills
+
+The `skills` option takes a comma-separated list of skill sources, for example `vercel-labs/agent-skills` or a full GitHub URL. Each entry is installed globally for the remote user with `npx -y skills add <source> -g -y -a claude-code`, so the skills land in `~/.claude/skills`. The option is blank by default.
+
+Node.js is installed on demand, and only when at least one non-blank entry is given. The skills CLI needs Node 22.20 or newer, which is newer than the distro packages, so the latest Node 22 release is downloaded from nodejs.org (the unofficial musl builds on Alpine), checksum-verified and unpacked into `/usr/local`. An existing Node 22 or newer is reused. Blank values such as a lone comma or spaces install nothing. Entries may only contain letters, digits and the characters dot, underscore, slash, colon, at sign, tilde, plus and hyphen; anything else fails the build before any command runs.
 
 ## Claude Code Status Line
 

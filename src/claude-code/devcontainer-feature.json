@@ -26,6 +26,11 @@
       "default": false,
       "description": "When true, installs statusline.sh to ~/.claude/statusline-command.sh and configures it as the Claude Code status line in ~/.claude/settings.json."
     },
+    "skills": {
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated list of agent skill sources to install globally for Claude Code via the skills CLI (npx skills add). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty."
+    },
     "planMode": {
       "type": "boolean",
       "default": true,
