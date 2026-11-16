@@ -20,10 +20,4 @@ PLUGINS='--help' bash "${INSTALL_SH}" >/tmp/plugins-invalid-dash.log 2>&1 || rc=
 check "dash entry exits non-zero" test "${rc}" -ne 0
 check "dash entry error printed" grep -q "start with a dash" /tmp/plugins-invalid-dash.log
 
-rc=0
-SKILLS='x/y' SKILLSAGENT='a;touch /tmp/pwned' bash "${INSTALL_SH}" >/tmp/agent-invalid.log 2>&1 || rc=$?
-check "bad skillsAgent exits non-zero" test "${rc}" -ne 0
-check "bad skillsAgent error printed" grep -q "unsafe skillsAgent" /tmp/agent-invalid.log
-check "no injected file from skillsAgent" test ! -e /tmp/pwned
-
 reportResults

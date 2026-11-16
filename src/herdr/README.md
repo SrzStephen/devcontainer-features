@@ -1,7 +1,7 @@
 
 # herdr (herdr)
 
-Installs herdr, a terminal workspace manager for AI coding agents, for the remote user, with optional plugins and agent skills.
+Installs herdr, a terminal workspace manager for AI coding agents, for the remote user, with optional plugins.
 
 ## Example Usage
 
@@ -16,8 +16,6 @@ Installs herdr, a terminal workspace manager for AI coding agents, for the remot
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | plugins | Comma-separated list of herdr plugins to install from GitHub (herdr plugin install ENTRY --yes). Each entry is owner/repo or owner/repo/subdir. Skipped when empty. | string | - |
-| skills | Comma-separated list of agent skill sources to install globally via the skills CLI (npx skills add). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Requires skillsAgent. Node.js is installed on demand. Skipped when empty. | string | - |
-| skillsAgent | Agent id the skills are installed for (skills CLI -a flag), e.g. claude-code, kiro-cli or hermes-agent. herdr is not an agent itself, so there is no default; when skills is set but this is empty a warning is printed and no skills are installed. | string | - |
 
 ## Compatibility
 
@@ -39,15 +37,6 @@ The `plugins` option takes a comma-separated list of `owner/repo` or `owner/repo
 - A nonexistent repository fails the build with `failed to install herdr plugin: <entry>`.
 - Entries may only contain letters, digits and the characters dot, underscore, slash, colon, at sign, tilde, plus and hyphen, and must not start with a dash. Anything else fails the build before any command runs. Blank entries are ignored.
 - Plugins can run code on your behalf, so only install sources you trust.
-
-## Agent Skills
-
-herdr is not an agent itself, so skills are installed for another agent that you also run inside herdr. Set `skillsAgent` to that agent's skills id (for example `claude-code`, `kiro-cli` or `hermes-agent`; `universal` is the nearest to a neutral target) and `skills` to a comma-separated list of sources such as `vercel-labs/agent-skills` or a full GitHub URL. Each entry is installed globally for the remote user with `npx -y skills add <source> -g -y -a <skillsAgent>`.
-
-- If `skills` has entries but `skillsAgent` is empty, a warning is printed and nothing is installed (no Node.js either). The build still succeeds.
-- Node.js is installed on demand, and only when skills will actually be installed. The skills CLI needs Node 22.20 or newer, so the latest Node 22 release is downloaded from nodejs.org, checksum-verified and unpacked into `/usr/local`. An existing Node 22.20 or newer is reused.
-- `skillsAgent` follows the same character rules as plugin entries and must not start with a dash.
-- This feature does not install the target agent; add its own feature (for example `claude-code`) alongside it.
 
 ## Persisting sessions
 
