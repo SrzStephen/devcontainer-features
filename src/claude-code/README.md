@@ -21,6 +21,7 @@ Installs Claude Code CLI and optionally configures plugin marketplaces, plugins,
 | statusline | When true, installs statusline.sh to ~/.claude/statusline-command.sh and configures it as the Claude Code status line in ~/.claude/settings.json. | boolean | false |
 | skills | Comma-separated list of agent skill sources to install globally for Claude Code via the skills CLI (npx skills add). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty. | string | - |
 | planMode | When true, sets plan mode as the default permission mode in ~/.claude/settings.json, so Claude plans before executing actions. | boolean | true |
+| defaultToAgentsView | Value written to the defaultToAgentsView setting in ~/.claude/settings.json. When true (the default), Claude Code opens to the agents view on start. Set to false to disable. | boolean | true |
 
 ## Compatibility
 

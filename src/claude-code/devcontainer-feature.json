@@ -35,6 +35,11 @@
       "type": "boolean",
       "default": true,
       "description": "When true, sets plan mode as the default permission mode in ~/.claude/settings.json, so Claude plans before executing actions."
+    },
+    "defaultToAgentsView": {
+      "type": "boolean",
+      "default": true,
+      "description": "Value written to the defaultToAgentsView setting in ~/.claude/settings.json. When true (the default), Claude Code opens to the agents view on start. Set to false to disable."
     }
   },
   "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]

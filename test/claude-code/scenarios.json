@@ -47,6 +47,20 @@
       }
     }
   },
+  "agents-view-off": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {
+        "defaultToAgentsView": "false"
+      }
+    }
+  },
+  "agents-view-on": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {}
+    }
+  },
   "skills": {
     "image": "debian:bookworm",
     "features": {
