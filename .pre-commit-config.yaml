@@ -33,6 +33,13 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: prettier-check
+        name: prettier-check (matches CI)
+        entry: npx --yes prettier@3.8.3 --check
+        language: system
+        files: \.(json|ya?ml|md)$
+        exclude: devcontainer-lock\.json$
+
       - id: act-dry
         name: act-dry
         entry: just act-dry
