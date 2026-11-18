@@ -46,5 +46,55 @@
         "planMode": "true"
       }
     }
+  },
+  "agents-view-off": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {
+        "defaultToAgentsView": "false"
+      }
+    }
+  },
+  "agents-view-on": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {}
+    }
+  },
+  "skills": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {
+        "skills": "vercel-labs/agent-skills"
+      }
+    }
+  },
+  "skills-non-root": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "claude-code": {
+        "skills": "vercel-labs/agent-skills"
+      }
+    }
+  },
+  "skills-empty": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {}
+    }
+  },
+  "skills-blank": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {
+        "skills": " , "
+      }
+    }
+  },
+  "skills-invalid": {
+    "image": "debian:bookworm",
+    "features": {
+      "claude-code": {}
+    }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "id": "hermes",
+  "version": "1.0.0",
+  "name": "Hermes Agent",
+  "description": "Installs Hermes Agent (Nous Research) for the remote user, with optional plugins and agent skills.",
+  "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/hermes/README.md",
+  "keywords": ["hermes", "nous", "ai", "cli", "coding-assistant"],
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"],
+  "options": {
+    "plugins": {
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated list of Hermes plugins to install and enable (hermes plugins install ENTRY --enable). Each entry is a curated catalog name (e.g. snyk), an owner/repo shorthand or a Git URL. Skipped when empty."
+    },
+    "skills": {
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated list of agent skill sources to install globally for Hermes Agent via the skills CLI (npm install -g skills). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty."
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "herdr",
+  "version": "1.0.0",
+  "name": "herdr",
+  "description": "Installs herdr, a terminal workspace manager for AI coding agents, for the remote user, with optional plugins.",
+  "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/herdr/README.md",
+  "keywords": ["herdr", "terminal", "multiplexer", "ai", "coding-assistant"],
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"],
+  "options": {
+    "plugins": {
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated list of herdr plugins to install from GitHub (herdr plugin install ENTRY --yes). Each entry is owner/repo or owner/repo/subdir. Skipped when empty."
+    }
+  }
+}
