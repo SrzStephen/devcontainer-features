@@ -2,7 +2,8 @@
 set -e
 source dev-container-features-test-lib
 
-check "npx present" which npx
+check "npm present" which npm
+check "skills CLI present" which skills
 check "skill installed" test -n "$(ls ~/.kiro/skills 2>/dev/null)"
 
 reportResults

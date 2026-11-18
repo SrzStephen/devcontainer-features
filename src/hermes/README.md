@@ -16,7 +16,7 @@ Installs Hermes Agent (Nous Research) for the remote user, with optional plugins
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | plugins | Comma-separated list of Hermes plugins to install and enable (hermes plugins install ENTRY --enable). Each entry is a curated catalog name (e.g. snyk), an owner/repo shorthand or a Git URL. Skipped when empty. | string | - |
-| skills | Comma-separated list of agent skill sources to install globally for Hermes Agent via the skills CLI (npx skills add). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty. | string | - |
+| skills | Comma-separated list of agent skill sources to install globally for Hermes Agent via the skills CLI (npm install -g skills). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty. | string | - |
 
 ## Compatibility
 
@@ -40,9 +40,9 @@ The `plugins` option takes a comma-separated list. Each entry is installed and e
 
 ## Agent Skills
 
-The `skills` option takes a comma-separated list of skill sources, for example `vercel-labs/agent-skills` or a full GitHub URL. Each entry is installed globally for the remote user with `npx -y skills add <source> -g -y -a hermes-agent`, so the skills land in `~/.hermes/skills`. The option is blank by default.
+The `skills` option takes a comma-separated list of skill sources, for example `vercel-labs/agent-skills` or a full GitHub URL. Each entry is installed globally for the remote user with `skills add <source> -g -y -a hermes-agent`, so the skills land in `~/.hermes/skills`. The option is blank by default.
 
-Node.js is installed on demand, and only when at least one non-blank entry is given. The skills CLI needs Node 22.20 or newer, so the latest Node 22 release is downloaded from nodejs.org, checksum-verified and unpacked into `/usr/local` (the unofficial musl builds on Alpine). An existing Node 22.20 or newer is reused. Blank values such as a lone comma or spaces install nothing. The same entry rules as for plugins apply.
+Node.js is installed on demand, and only when at least one non-blank entry is given. The skills CLI needs Node 22.20 or newer, which is newer than the distro packages. An existing npm is reused when its Node.js is 22.20 or newer; otherwise nvm (pinned and checksum-verified) is downloaded into `/usr/local/share/nvm`, installs the latest Node 22 release (the unofficial musl builds on Alpine), and `node`, `npm` and `npx` are linked into `/usr/local/bin`. The skills CLI itself is then installed with `npm install -g skills`. Blank values such as a lone comma or spaces install nothing. The same entry rules as for plugins apply.
 
 ## Persisting state
 

@@ -76,7 +76,7 @@ _install_pkg() {
 # Agent skills (canonical helpers, shared verbatim across features)
 #
 # requires: bash with set -e; run_as_user (runs a command string as the remote
-#   user); curl, tar and sha256sum on PATH; the SKILLS variable (comma-separated
+#   user); curl and sha256sum on PATH; the SKILLS variable (comma-separated
 #   list, may be empty or unset). Usage: validate_skills early, then
 #   install_skills <agent> once the agent itself is installed.
 # ---------------------------------------------------------------------------
@@ -113,65 +113,71 @@ validate_skills() {
 }
 
 # The skills CLI requires Node.js >= 22.20, newer than the Debian and Alpine
-# distro packages. Install the latest Node 22 release into /usr/local from the
-# official tarball (nodejs.org, or the unofficial musl builds on Alpine),
-# verifying the published SHA-256 checksum. Skipped when a suitable node and npx
-# are already present.
-_ensure_node() {
-    local _nodever="" _major=0 _minor=0 _arch _base _suffix="" _ver _file _sums _expected _tmp
-    if command -v node &>/dev/null && command -v npx &>/dev/null; then
-        _nodever="$(node -p 'process.versions.node' 2>/dev/null || true)"
-        _major="${_nodever%%.*}"
-        _minor="${_nodever#*.}"
-        _minor="${_minor%%.*}"
-        if [ "${_major:-0}" -gt 22 ] 2>/dev/null ||
-            { [ "${_major:-0}" -eq 22 ] && [ "${_minor:-0}" -ge 20 ]; } 2>/dev/null; then
-            return 0
-        fi
+# distro packages. An existing npm is reused when its node is new enough;
+# otherwise nvm (pinned and checksum-verified) is downloaded into
+# /usr/local/share/nvm and installs the latest Node 22 release (the unofficial
+# musl builds on Alpine), and node, npm and npx are linked into /usr/local/bin.
+NVM_VERSION="v0.41.0"
+NVM_SHA256="e7ffd3d192735da61e5eb04e68f1aca4a293af4cd0000864568d6de7aa8f6fc4"
+
+_node_ok() {
+    local _nodever _major _minor
+    command -v node &>/dev/null || return 1
+    _nodever="$(node -p 'process.versions.node' 2>/dev/null || true)"
+    _major="${_nodever%%.*}"
+    _minor="${_nodever#*.}"
+    _minor="${_minor%%.*}"
+    [ "${_major:-0}" -gt 22 ] 2>/dev/null ||
+        { [ "${_major:-0}" -eq 22 ] && [ "${_minor:-0}" -ge 20 ]; } 2>/dev/null
+}
+
+_ensure_npm() {
+    local _nvm_dir=/usr/local/share/nvm _node_bin _tool
+    if command -v npm &>/dev/null && _node_ok; then
+        return 0
+    fi
+    if command -v npm &>/dev/null; then
+        echo "Existing npm found, but its Node.js is older than 22.20; installing Node 22 with nvm"
     fi
 
-    case "$(uname -m)" in
-        x86_64) _arch=x64 ;;
-        aarch64 | arm64) _arch=arm64 ;;
-        *) echo "ERROR: unsupported architecture for Node.js install: $(uname -m)" >&2; return 1 ;;
-    esac
-    _base="https://nodejs.org/dist"
     if command -v apk &>/dev/null; then
-        _base="https://unofficial-builds.nodejs.org/download/release"
-        _suffix="-musl"
         apk add --no-cache libstdc++
     fi
 
-    _ver="$(curl -fsSL "https://nodejs.org/dist/latest-v22.x/SHASUMS256.txt" | grep -oE 'node-v22\.[0-9]+\.[0-9]+' | head -1 | sed 's/^node-//')"
-    [ -n "${_ver}" ] || { echo "ERROR: could not determine latest Node.js 22 version" >&2; return 1; }
-    _file="node-${_ver}-linux-${_arch}${_suffix}.tar.gz"
-    _sums="$(curl -fsSL "${_base}/${_ver}/SHASUMS256.txt")"
-    _expected="$(printf '%s\n' "${_sums}" | grep " ${_file}\$" | cut -d' ' -f1)"
-    [ -n "${_expected}" ] || { echo "ERROR: no checksum published for ${_file}" >&2; return 1; }
+    echo "Installing nvm ${NVM_VERSION}..."
+    mkdir -p "${_nvm_dir}"
+    if ! curl -fsSL -o "${_nvm_dir}/nvm.sh" "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/nvm.sh"; then
+        echo "ERROR: failed to download nvm ${NVM_VERSION}" >&2
+        return 1
+    fi
+    if [ "$(sha256sum "${_nvm_dir}/nvm.sh" | cut -d' ' -f1)" != "${NVM_SHA256}" ]; then
+        echo "ERROR: checksum mismatch for nvm ${NVM_VERSION}" >&2
+        rm -f "${_nvm_dir}/nvm.sh"
+        return 1
+    fi
 
-    _tmp="$(mktemp -d)"
-    echo "Installing Node.js ${_ver} (${_arch}${_suffix})..."
-    if ! curl -fsSL -o "${_tmp}/${_file}" "${_base}/${_ver}/${_file}"; then
-        echo "ERROR: failed to download ${_file}" >&2
-        rm -rf "${_tmp}"
+    # nvm.sh is not safe under set -e, so drive it from a separate shell.
+    # shellcheck disable=SC2016
+    if ! _node_bin="$(NVM_DIR="${_nvm_dir}" bash -c '
+        if [ -f /etc/alpine-release ]; then
+            export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release
+        fi
+        . "${NVM_DIR}/nvm.sh" --no-use || exit 1
+        nvm install 22 >&2 || exit 1
+        dirname "$(command -v node)"
+    ')" || [ ! -x "${_node_bin}/node" ]; then
+        echo "ERROR: nvm failed to install Node.js 22" >&2
         return 1
     fi
-    if [ "$(sha256sum "${_tmp}/${_file}" | cut -d' ' -f1)" != "${_expected}" ]; then
-        echo "ERROR: checksum mismatch for ${_file}" >&2
-        rm -rf "${_tmp}"
-        return 1
-    fi
-    if ! tar -xzf "${_tmp}/${_file}" -C /usr/local --strip-components=1 --no-same-owner \
-        --exclude='*/CHANGELOG.md' --exclude='*/LICENSE' --exclude='*/README.md'; then
-        echo "ERROR: failed to extract ${_file}" >&2
-        rm -rf "${_tmp}"
-        return 1
-    fi
-    rm -rf "${_tmp}"
+    for _tool in node npm npx; do
+        ln -sf "${_node_bin}/${_tool}" "/usr/local/bin/${_tool}"
+    done
+    hash -r
 }
 
 # install_skills <agent>: install each SKILLS entry for the given agent id using
-# the skills CLI. Does nothing (and installs no Node) when SKILLS is blank.
+# the skills CLI, installed globally with npm. Does nothing (and installs no
+# Node) when SKILLS is blank.
 install_skills() {
     local _agent="$1" _entry
     local -a _entries
@@ -179,10 +185,14 @@ install_skills() {
     mapfile -t _entries < <(_skills_entries)
     [ "${#_entries[@]}" -gt 0 ] || return 0
 
-    _ensure_node
+    _ensure_npm
+    if ! command -v skills &>/dev/null; then
+        echo "Installing the skills CLI with npm..."
+        npm install -g --prefix /usr/local skills
+    fi
     for _entry in "${_entries[@]}"; do
         echo "Installing skills: ${_entry} (agent: ${_agent})"
-        run_as_user "npx -y skills add ${_entry} -g -y -a ${_agent}"
+        run_as_user "skills add ${_entry} -g -y -a ${_agent}"
     done
 }
 

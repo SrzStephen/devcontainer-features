@@ -15,7 +15,7 @@
     "skills": {
       "type": "string",
       "default": "",
-      "description": "Comma-separated list of agent skill sources to install globally for Hermes Agent via the skills CLI (npx skills add). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty."
+      "description": "Comma-separated list of agent skill sources to install globally for Hermes Agent via the skills CLI (npm install -g skills). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty."
     }
   }
 }
