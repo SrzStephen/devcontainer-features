@@ -57,7 +57,8 @@ _is_musl() {
 }
 
 if command -v apk >/dev/null 2>&1; then
-    apk add --no-cache curl ca-certificates gcompat
+    # libstdc++/libgcc are runtime deps of the musl Node build used below.
+    apk add --no-cache curl ca-certificates libstdc++ libgcc
 else
     if [ "$(find /var/lib/apt/lists/* 2>/dev/null | wc -l)" = "0" ]; then
         apt-get update -y
@@ -67,14 +68,57 @@ fi
 
 GCL_VERSION="$(resolve_version firecow/gitlab-ci-local "${GCL_VERSION}")"
 
-# The pre-built binary is glibc-linked. On musl+aarch64 (Alpine arm64), gcompat
-# is insufficient — fall back to npm which works on all libcs.
-if _is_musl && [ "${ARCH}" = "aarch64" ]; then
-    echo "Detected musl libc on aarch64 — installing gitlab-ci-local ${GCL_VERSION} via npm..."
-    if ! command -v npm >/dev/null 2>&1; then
-        apk add --no-cache nodejs npm
+# Node major used to run gitlab-ci-local on musl. Recent gitlab-ci-local releases
+# require Node >= 24, newer than what older Alpine releases package.
+NODE_MAJOR="24"
+NODE_MIRROR="https://unofficial-builds.nodejs.org/download/release"
+GCL_PREFIX="/usr/local/lib/gitlab-ci-local"
+
+# Install a private, checksum-verified musl Node build into ${GCL_PREFIX}/node.
+install_musl_node() {
+    local node_arch node_version tarball tmp_node
+    case "${ARCH}" in
+        x86_64)  node_arch="x64" ;;
+        aarch64) node_arch="arm64" ;;
+        *)
+            echo "(!) Architecture ${ARCH} unsupported on musl"
+            exit 1
+            ;;
+    esac
+    # index.tab is newest-first. awk must consume all input (no early `exit`)
+    # or curl hits SIGPIPE and fails the pipeline under pipefail.
+    node_version="$(curl -fsSL "${NODE_MIRROR}/index.tab" \
+        | awk -F'\t' -v major="v${NODE_MAJOR}." -v f="linux-${node_arch}-musl" \
+            '!found && NR > 1 && index($1, major) == 1 && index($3, f) { print $1; found = 1 }')"
+    if [ -z "${node_version}" ]; then
+        echo "ERROR: No musl Node ${NODE_MAJOR}.x build found for ${node_arch}" >&2
+        exit 1
     fi
-    npm install -g "gitlab-ci-local@${GCL_VERSION}"
+    echo "Installing Node ${node_version} (linux-${node_arch}-musl) for gitlab-ci-local..."
+    tarball="node-${node_version}-linux-${node_arch}-musl.tar.xz"
+    tmp_node="$(mktemp -d)"
+    download "${NODE_MIRROR}/${node_version}/${tarball}" "${tmp_node}/${tarball}"
+    download "${NODE_MIRROR}/${node_version}/SHASUMS256.txt" "${tmp_node}/SHASUMS256.txt"
+    (cd "${tmp_node}" && grep " ${tarball}\$" SHASUMS256.txt | sha256sum -c -)
+    rm -rf "${GCL_PREFIX}/node"
+    mkdir -p "${GCL_PREFIX}/node"
+    tar xJf "${tmp_node}/${tarball}" -C "${GCL_PREFIX}/node" --strip-components=1
+    rm -rf "${tmp_node}"
+}
+
+# The pre-built binary is glibc-linked and gcompat cannot run it (e.g.
+# "__pthread_key_create: symbol not found"). On musl, install the npm package
+# under a private Node runtime and expose it via a wrapper on PATH.
+if _is_musl; then
+    install_musl_node
+    echo "Installing gitlab-ci-local ${GCL_VERSION} via npm..."
+    PATH="${GCL_PREFIX}/node/bin:${PATH}" npm install -g --no-fund --no-audit \
+        --prefix "${GCL_PREFIX}" "gitlab-ci-local@${GCL_VERSION}"
+    cat > /usr/local/bin/gitlab-ci-local <<EOF
+#!/bin/sh
+PATH="${GCL_PREFIX}/node/bin:\${PATH}" exec "${GCL_PREFIX}/bin/gitlab-ci-local" "\$@"
+EOF
+    chmod 0755 /usr/local/bin/gitlab-ci-local
 else
     case "${ARCH}" in
         x86_64)  ARCH="amd64" ;;
