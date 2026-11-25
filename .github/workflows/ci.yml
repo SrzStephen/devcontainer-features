@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # Monthly full run (all features, all scenarios) to catch upstream breakage,
+  # e.g. a new "latest" release changing its packaging. 03:00 UTC on the 1st.
+  schedule:
+    - cron: "0 3 1 * *"
 
 jobs:
   lint:
