@@ -42,7 +42,7 @@ jobs:
           echo "count=$count" >> "$GITHUB_OUTPUT"
       - name: "Publish Features"
         if: steps.detect.outputs.count != '0'
-        uses: devcontainers/action@v1
+        uses: devcontainers/action@v1.4.4
         with:
           publish-features: "true"
           base-path-to-features: "/tmp/publish-src"

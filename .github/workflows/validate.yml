@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: "Validate devcontainer-feature.json files"
-        uses: devcontainers/action@v1
+        uses: devcontainers/action@v1.4.4
         with:
           validate-only: "true"
           base-path-to-features: "./src"
