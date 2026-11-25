@@ -12,6 +12,8 @@ PLUGIN="${PLUGIN:-""}"
 REMOVE_ATTRIBUTION="${REMOVEATTRIBUTION:-"false"}"
 STATUSLINE="${STATUSLINE:-"false"}"
 PLAN_MODE="${PLANMODE:-"false"}"
+DEFAULT_TO_AGENTS_VIEW="${DEFAULTTOAGENTSVIEW:-"true"}"
+SKILLS="${SKILLS:-""}"
 
 REMOTE_USER="${_REMOTE_USER:-"vscode"}"
 REMOTE_USER_HOME="${_REMOTE_USER_HOME:-"/home/${REMOTE_USER}"}"
@@ -70,6 +72,132 @@ _install_pkg() {
     fi
 }
 
+# ---------------------------------------------------------------------------
+# Agent skills (canonical helpers, shared verbatim across features)
+#
+# requires: bash with set -e; run_as_user (runs a command string as the remote
+#   user); curl and sha256sum on PATH; the SKILLS variable (comma-separated
+#   list, may be empty or unset). Usage: validate_skills early, then
+#   install_skills <agent> once the agent itself is installed.
+# ---------------------------------------------------------------------------
+
+# Print each non-blank, whitespace-trimmed entry of the comma-separated SKILLS
+# option on its own line.
+_skills_entries() {
+    local _entry
+    local -a _raw
+    IFS=',' read -ra _raw <<< "${SKILLS:-}"
+    for _entry in "${_raw[@]}"; do
+        _entry="${_entry#"${_entry%%[![:space:]]*}"}"
+        _entry="${_entry%"${_entry##*[![:space:]]}"}"
+        [ -n "${_entry}" ] && printf '%s\n' "${_entry}"
+    done
+    return 0
+}
+
+# Fail before anything runs if any SKILLS entry contains characters outside the
+# allow-list, since entries are interpolated into a shell command string, or
+# starts with a dash, which the skills CLI would parse as an option.
+validate_skills() {
+    local _entry
+    while IFS= read -r _entry; do
+        if [ "${_entry:0:1}" = "-" ]; then
+            echo "ERROR: refusing unsafe skills entry (must not start with a dash): ${_entry}" >&2
+            return 1
+        fi
+        if ! printf '%s' "${_entry}" | grep -qE '^[A-Za-z0-9._/:@~+-]+$'; then
+            echo "ERROR: refusing unsafe skills entry (only A-Za-z0-9 . _ / : @ ~ + - are allowed): ${_entry}" >&2
+            return 1
+        fi
+    done < <(_skills_entries)
+}
+
+# The skills CLI requires Node.js >= 22.20, newer than the Debian and Alpine
+# distro packages. An existing npm is reused when its node is new enough;
+# otherwise nvm (pinned and checksum-verified) is downloaded into
+# /usr/local/share/nvm and installs the latest Node 22 release (the unofficial
+# musl builds on Alpine), and node, npm and npx are linked into /usr/local/bin.
+NVM_VERSION="v0.41.0"
+NVM_SHA256="e7ffd3d192735da61e5eb04e68f1aca4a293af4cd0000864568d6de7aa8f6fc4"
+
+_node_ok() {
+    local _nodever _major _minor
+    command -v node &>/dev/null || return 1
+    _nodever="$(node -p 'process.versions.node' 2>/dev/null || true)"
+    _major="${_nodever%%.*}"
+    _minor="${_nodever#*.}"
+    _minor="${_minor%%.*}"
+    [ "${_major:-0}" -gt 22 ] 2>/dev/null ||
+        { [ "${_major:-0}" -eq 22 ] && [ "${_minor:-0}" -ge 20 ]; } 2>/dev/null
+}
+
+_ensure_npm() {
+    local _nvm_dir=/usr/local/share/nvm _node_bin _tool
+    if command -v npm &>/dev/null && _node_ok; then
+        return 0
+    fi
+    if command -v npm &>/dev/null; then
+        echo "Existing npm found, but its Node.js is older than 22.20; installing Node 22 with nvm"
+    fi
+
+    if command -v apk &>/dev/null; then
+        apk add --no-cache libstdc++
+    fi
+
+    echo "Installing nvm ${NVM_VERSION}..."
+    mkdir -p "${_nvm_dir}"
+    if ! curl -fsSL -o "${_nvm_dir}/nvm.sh" "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/nvm.sh"; then
+        echo "ERROR: failed to download nvm ${NVM_VERSION}" >&2
+        return 1
+    fi
+    if [ "$(sha256sum "${_nvm_dir}/nvm.sh" | cut -d' ' -f1)" != "${NVM_SHA256}" ]; then
+        echo "ERROR: checksum mismatch for nvm ${NVM_VERSION}" >&2
+        rm -f "${_nvm_dir}/nvm.sh"
+        return 1
+    fi
+
+    # nvm.sh is not safe under set -e, so drive it from a separate shell.
+    # shellcheck disable=SC2016
+    if ! _node_bin="$(NVM_DIR="${_nvm_dir}" bash -c '
+        if [ -f /etc/alpine-release ]; then
+            export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release
+        fi
+        . "${NVM_DIR}/nvm.sh" --no-use || exit 1
+        nvm install 22 >&2 || exit 1
+        dirname "$(command -v node)"
+    ')" || [ ! -x "${_node_bin}/node" ]; then
+        echo "ERROR: nvm failed to install Node.js 22" >&2
+        return 1
+    fi
+    for _tool in node npm npx; do
+        ln -sf "${_node_bin}/${_tool}" "/usr/local/bin/${_tool}"
+    done
+    hash -r
+}
+
+# install_skills <agent>: install each SKILLS entry for the given agent id using
+# the skills CLI, installed globally with npm. Does nothing (and installs no
+# Node) when SKILLS is blank.
+install_skills() {
+    local _agent="$1" _entry
+    local -a _entries
+    validate_skills || return 1
+    mapfile -t _entries < <(_skills_entries)
+    [ "${#_entries[@]}" -gt 0 ] || return 0
+
+    _ensure_npm
+    if ! command -v skills &>/dev/null; then
+        echo "Installing the skills CLI with npm..."
+        npm install -g --prefix /usr/local skills
+    fi
+    for _entry in "${_entries[@]}"; do
+        echo "Installing skills: ${_entry} (agent: ${_agent})"
+        run_as_user "skills add ${_entry} -g -y -a ${_agent}"
+    done
+}
+
+validate_skills
+
 if ! command -v curl &>/dev/null; then
     _install_pkg curl ca-certificates
 fi
@@ -78,7 +206,7 @@ if { [ -n "${MARKETPLACE}" ] || [ -n "${PLUGIN}" ]; } && ! command -v git &>/dev
     _install_pkg git ca-certificates
 fi
 
-if { [ "${REMOVE_ATTRIBUTION}" = "true" ] || [ "${STATUSLINE}" = "true" ] || [ "${PLAN_MODE}" = "true" ] || [ -n "${MARKETPLACE}" ] || [ -n "${PLUGIN}" ]; } && ! command -v jq &>/dev/null; then
+if { [ "${REMOVE_ATTRIBUTION}" = "true" ] || [ "${STATUSLINE}" = "true" ] || [ "${PLAN_MODE}" = "true" ] || [ -n "${DEFAULT_TO_AGENTS_VIEW}" ] || [ -n "${MARKETPLACE}" ] || [ -n "${PLUGIN}" ]; } && ! command -v jq &>/dev/null; then
     _install_pkg jq
 fi
 
@@ -158,6 +286,35 @@ if [ "${PLAN_MODE}" = "true" ]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Default to agents view
+# ---------------------------------------------------------------------------
+
+case "${DEFAULT_TO_AGENTS_VIEW}" in
+    true | false) ;;
+    *) echo "ERROR: defaultToAgentsView must be 'true' or 'false', got: ${DEFAULT_TO_AGENTS_VIEW}" >&2; exit 1 ;;
+esac
+
+CLAUDE_SETTINGS="${REMOTE_USER_HOME}/.claude/settings.json"
+CLAUDE_SETTINGS_DIR="$(dirname "${CLAUDE_SETTINGS}")"
+
+mkdir -p "${CLAUDE_SETTINGS_DIR}"
+chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS_DIR}"
+
+if [ -f "${CLAUDE_SETTINGS}" ] && jq -e 'has("defaultToAgentsView")' "${CLAUDE_SETTINGS}" &>/dev/null; then
+    echo "defaultToAgentsView already configured in ${CLAUDE_SETTINGS}, skipping."
+elif [ -f "${CLAUDE_SETTINGS}" ]; then
+    tmp=$(mktemp)
+    jq --argjson v "${DEFAULT_TO_AGENTS_VIEW}" '. + {"defaultToAgentsView": $v}' "${CLAUDE_SETTINGS}" > "${tmp}"
+    mv "${tmp}" "${CLAUDE_SETTINGS}"
+    chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS}"
+    echo "defaultToAgentsView set to ${DEFAULT_TO_AGENTS_VIEW} in ${CLAUDE_SETTINGS}."
+else
+    printf '{"defaultToAgentsView":%s}\n' "${DEFAULT_TO_AGENTS_VIEW}" > "${CLAUDE_SETTINGS}"
+    chown "${REMOTE_USER}:${REMOTE_USER}" "${CLAUDE_SETTINGS}"
+    echo "defaultToAgentsView set to ${DEFAULT_TO_AGENTS_VIEW} in ${CLAUDE_SETTINGS}."
+fi
+
+# ---------------------------------------------------------------------------
 # Statusline
 # ---------------------------------------------------------------------------
 
@@ -220,6 +377,12 @@ if [ -n "${PLUGIN}" ]; then
         run_as_user "${CLAUDE_BIN} plugin install ${_p_ref}"
     done
 fi
+
+# ---------------------------------------------------------------------------
+# Skills
+# ---------------------------------------------------------------------------
+
+install_skills claude-code
 
 if command -v apt-get &>/dev/null; then
     rm -rf /var/lib/apt/lists/*

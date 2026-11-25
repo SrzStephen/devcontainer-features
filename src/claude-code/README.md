@@ -19,7 +19,9 @@ Installs Claude Code CLI and optionally configures plugin marketplaces, plugins,
 | plugin | Comma-separated list of plugins to install after marketplaces are configured. Each entry accepts plugin-name@marketplace-name format (e.g. superpowers@superpowers-marketplace) or a full GitHub URL. Skipped when empty. | string | - |
 | removeAttribution | When true, injects empty commit and pr attribution strings into ~/.claude/settings.json, suppressing Co-Authored-By lines from Claude Code commits. | boolean | false |
 | statusline | When true, installs statusline.sh to ~/.claude/statusline-command.sh and configures it as the Claude Code status line in ~/.claude/settings.json. | boolean | false |
+| skills | Comma-separated list of agent skill sources to install globally for Claude Code via the skills CLI (npm install -g skills). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty. | string | - |
 | planMode | When true, sets plan mode as the default permission mode in ~/.claude/settings.json, so Claude plans before executing actions. | boolean | true |
+| defaultToAgentsView | Value written to the defaultToAgentsView setting in ~/.claude/settings.json. When true (the default), Claude Code opens to the agents view on start. Set to false to disable. | boolean | true |
 
 ## Compatibility
 
@@ -29,6 +31,12 @@ Installs Claude Code CLI and optionally configures plugin marketplaces, plugins,
 | Alpine Linux    | ✓ tested  | Tested in CI   |
 
 **Architectures:** x86_64, aarch64
+
+## Agent Skills
+
+The `skills` option takes a comma-separated list of skill sources, for example `vercel-labs/agent-skills` or a full GitHub URL. Each entry is installed globally for the remote user with `skills add <source> -g -y -a claude-code`, so the skills land in `~/.claude/skills`. The option is blank by default.
+
+Node.js is installed on demand, and only when at least one non-blank entry is given. The skills CLI needs Node 22.20 or newer, which is newer than the distro packages. An existing npm is reused when its Node.js is 22.20 or newer; otherwise nvm (pinned and checksum-verified) is downloaded into `/usr/local/share/nvm`, installs the latest Node 22 release (the unofficial musl builds on Alpine), and `node`, `npm` and `npx` are linked into `/usr/local/bin`. The skills CLI itself is then installed with `npm install -g skills`. Blank values such as a lone comma or spaces install nothing. Entries may only contain letters, digits and the characters dot, underscore, slash, colon, at sign, tilde, plus and hyphen; anything else fails the build before any command runs.
 
 ## Claude Code Status Line
 

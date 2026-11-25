@@ -15,6 +15,8 @@ A collection of devcontainer features for tools commonly used in local developme
 | [claude-code](src/claude-code/README.md)                           | Claude Code CLI with optional plugin/marketplace config | `ghcr.io/SrzStephen/devcontainer-features/claude-code:0`              | ✓             | ✓      |
 | [gitlab-ci-local](src/gitlab-ci-local/README.md)                   | Run GitLab CI pipelines locally                         | `ghcr.io/SrzStephen/devcontainer-features/gitlab-ci-local:0`          | ✓             | ✓      |
 | [gitlab-cli](src/gitlab-cli/README.md)                             | GitLab CLI (glab)                                       | `ghcr.io/SrzStephen/devcontainer-features/gitlab-cli:0`               | ✓             | ✓      |
+| [herdr](src/herdr/README.md) | herdr, a terminal workspace manager for AI coding agents | `ghcr.io/SrzStephen/devcontainer-features/herdr:1` | ✓ | ✓ |
+| [hermes](src/hermes/README.md) | Hermes Agent (Nous Research) | `ghcr.io/SrzStephen/devcontainer-features/hermes:1` | ✓ | ✓ |
 | [just](src/just/README.md)                                         | Just command runner (includes just-lsp)                 | `ghcr.io/SrzStephen/devcontainer-features/just:0`                     | ✓             | ✓      |
 | [kiro-cli](src/kiro-cli/README.md)                                 | Kiro CLI                                                | `ghcr.io/SrzStephen/devcontainer-features/kiro-cli:0`                 | ✓             | ✓      |
 | [nvidia-container-toolkit](src/nvidia-container-toolkit/README.md) | NVIDIA Container Toolkit for GPU containers             | `ghcr.io/SrzStephen/devcontainer-features/nvidia-container-toolkit:0` | ✓             | —      |

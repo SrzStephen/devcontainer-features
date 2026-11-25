@@ -1,6 +1,6 @@
 {
   "id": "kiro-cli",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "name": "Kiro CLI",
   "description": "Installs the Kiro cli.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/kiro-cli/README.md",
@@ -17,6 +17,27 @@
       "type": "boolean",
       "default": false,
       "description": "Disable automatic background updates for Kiro CLI."
+    },
+    "defaultModel": {
+      "type": "string",
+      "default": "",
+      "description": "Default chat model (chat.defaultModel), e.g. 'claude-sonnet-4.6'. Empty means the setting is not touched."
+    },
+    "agentEngine": {
+      "type": "string",
+      "proposals": ["", "v3", "v2"],
+      "default": "",
+      "description": "Agent engine (chat.agentEngine): 'v1', 'v2' or 'v3'. Empty means the setting is not touched."
+    },
+    "disableGreeting": {
+      "type": "boolean",
+      "default": true,
+      "description": "Disable the Kiro CLI greeting (chat.greeting.enabled=false). When false, the setting is not touched."
+    },
+    "skills": {
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated list of agent skill sources to install globally for Kiro CLI via the skills CLI (npm install -g skills). Each entry accepts owner/repo shorthand (e.g. vercel-labs/agent-skills) or a full GitHub URL. Node.js is installed on demand. Skipped when empty."
     }
   }
 }

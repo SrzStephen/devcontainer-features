@@ -1,0 +1,40 @@
+{
+  "non-root-user": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "herdr": {}
+    }
+  },
+  "plugins": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "herdr": {
+        "plugins": "ogulcancelik/herdr-plugin-examples/dev-layout-bootstrap"
+      }
+    }
+  },
+  "plugins-empty": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "herdr": {}
+    }
+  },
+  "plugins-invalid": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "herdr": {}
+    }
+  },
+  "plugins-nonexistent": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "herdr": {}
+    }
+  },
+  "alpine": {
+    "image": "alpine:3.20",
+    "features": {
+      "herdr": {}
+    }
+  }
+}
