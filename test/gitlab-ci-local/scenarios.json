@@ -26,5 +26,13 @@
     "features": {
       "gitlab-ci-local": {}
     }
+  },
+  "alpine-pinned-version": {
+    "image": "alpine:3.20",
+    "features": {
+      "gitlab-ci-local": {
+        "version": "4.72.0"
+      }
+    }
   }
 }
