@@ -1,6 +1,6 @@
 {
   "id": "kiro-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "name": "Kiro CLI",
   "description": "Installs the Kiro cli.",
   "documentationURL": "https://github.com/SrzStephen/devcontainer-features/blob/main/src/kiro-cli/README.md",

@@ -60,6 +60,19 @@ verify_sha256_bare() {
     echo "Verified checksum for $(basename "${file}")."
 }
 
+# Install the Kiro binaries from a bin directory. kiro-cli is required;
+# kiro-cli-chat and kiro-cli-term shipped up to 2.x but were removed in 3.x
+# (3.3.0 ships only kiro-cli), so they are installed only when present.
+install_kiro_bins() {
+    local src="$1" bin
+    install -m 0755 "${src}/kiro-cli" /usr/local/bin/kiro-cli
+    for bin in kiro-cli-chat kiro-cli-term; do
+        if [ -f "${src}/${bin}" ]; then
+            install -m 0755 "${src}/${bin}" "/usr/local/bin/${bin}"
+        fi
+    done
+}
+
 # ---------------------------------------------------------------------------
 # Libc detection
 # ---------------------------------------------------------------------------
@@ -102,9 +115,7 @@ if command -v dpkg &>/dev/null && [ "${ARCH}" = "x86_64" ] && ! _use_musl; then
     verify_sha256_bare "${TMP_DEB}" "${TMP_DEB}.sha256"
     TMP_EXTRACT="$(mktemp -d)"
     dpkg-deb -x "${TMP_DEB}" "${TMP_EXTRACT}"
-    install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli" /usr/local/bin/kiro-cli
-    install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli-chat" /usr/local/bin/kiro-cli-chat
-    install -m 0755 "${TMP_EXTRACT}/usr/bin/kiro-cli-term" /usr/local/bin/kiro-cli-term
+    install_kiro_bins "${TMP_EXTRACT}/usr/bin"
     rm -rf "${TMP_EXTRACT}" "${TMP_DEB}"
 else
     # Zip-based install for arm64, musl, and non-Debian systems.
@@ -148,9 +159,7 @@ else
     fetch "${BASE_URL}/${ZIP}.sha256" "${TMP_DIR}/kiro.zip.sha256"
     verify_sha256_bare "${TMP_DIR}/kiro.zip" "${TMP_DIR}/kiro.zip.sha256"
     unzip -q "${TMP_DIR}/kiro.zip" -d "${TMP_DIR}"
-    install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli" /usr/local/bin/kiro-cli
-    install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli-chat" /usr/local/bin/kiro-cli-chat
-    install -m 0755 "${TMP_DIR}/kirocli/bin/kiro-cli-term" /usr/local/bin/kiro-cli-term
+    install_kiro_bins "${TMP_DIR}/kirocli/bin"
     rm -rf "${TMP_DIR}"
 fi
 
