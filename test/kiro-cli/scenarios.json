@@ -11,6 +11,24 @@
       "kiro-cli": { "version": "2.3.0" }
     }
   },
+  "pinned-version-alpine": {
+    "image": "alpine:3.20",
+    "features": {
+      "kiro-cli": { "version": "2.3.0" }
+    }
+  },
+  "pinned-version-3": {
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+      "kiro-cli": { "version": "3.3.0" }
+    }
+  },
+  "pinned-version-3-alpine": {
+    "image": "alpine:3.20",
+    "features": {
+      "kiro-cli": { "version": "3.3.0" }
+    }
+  },
   "disable-autoupdates": {
     "image": "mcr.microsoft.com/devcontainers/base:debian",
     "features": {
