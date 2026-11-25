@@ -47,8 +47,31 @@ jobs:
           publish-features: "true"
           base-path-to-features: "/tmp/publish-src"
           generate-docs: "true"
+          # The action's built-in tagging calls git.createRef (works) and then
+          # git.createTag, which GitHub answers with HTTP 500, so it warns
+          # "Failed to automatically add repo tag" even though the tag exists.
+          # The createTag object is never referenced anyway; tag in our own step.
+          disable-repo-tagging: "true"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tag published feature versions
+        if: steps.detect.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          for dir in /tmp/publish-src/*/; do
+            feature=$(basename "$dir")
+            version=$(jq -r '.version' "src/$feature/devcontainer-feature.json")
+            tag="feature_${feature}_${version}"
+            if gh api "repos/${{ github.repository }}/git/ref/tags/$tag" > /dev/null 2>&1; then
+              echo "Tag $tag already exists, skipping"
+              continue
+            fi
+            gh api -X POST "repos/${{ github.repository }}/git/refs" \
+              -f ref="refs/tags/$tag" -f sha="$GITHUB_SHA" > /dev/null
+            echo "Created tag $tag -> $GITHUB_SHA"
+          done
       - name: Install ORAS
         uses: oras-project/setup-oras@ac735097e22fe643015b0d19645f7c9a69942128 # v2.0.4
       - name: Annotate published features with OCI metadata
